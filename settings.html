@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Vitra – Settings</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    /* RESET & BASE */
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
+    body{display:flex;height:100vh;overflow:hidden;background:#0D1117;color:#E0E0E0;transition:background .3s,color .3s;}
+    a{color:inherit;text-decoration:none;}button{cursor:pointer;border:none;background:none;color:inherit;}
+    input, select, textarea{font-family:'Montserrat',sans-serif;}
+    :root{--accent-light:#8ECDF1;--accent-dark:#5DAEDC;}
+    html.light body{background:#F5F5F5;color:#222;}
+
+    /* SIDEBAR */
+    #sidebar{width:240px;background:#161B22;display:flex;flex-direction:column;transition:width .3s;}
+    #sidebar.collapsed{width:64px;}
+    .brand{display:flex;align-items:center;gap:0.75rem;padding:1.5rem;font-size:1.3rem;font-weight:700;color:var(--accent-light);}
+    .brand i{font-size:1.6rem;}
+    #sidebar.collapsed .brand span{display:none;}
+    .nav-links{flex:1;}
+    .nav-links a{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;transition:background .2s;color:#C9D1D9;}
+    .nav-links a:hover, .nav-links a.active{background:rgba(142,205,241,0.2);color:#FFF;}
+    #sidebar.collapsed .nav-links a span{display:none;}
+    .nav-links a i{width:24px;text-align:center;font-size:1.2rem;color:var(--accent-light);}
+    .toggle-sidebar{padding:1rem;text-align:center;cursor:pointer;border-top:1px solid #29303A;}
+    .toggle-sidebar i{font-size:1.2rem;color:var(--accent-light);}
+
+    /* MAIN */
+    #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(13,17,23,0.85);backdrop-filter:blur(6px);}
+    .header-left{display:flex;align-items:center;gap:1rem;}
+    .header-left i{font-size:1.4rem;cursor:pointer;}
+    .greeting h1{font-size:1.9rem;display:flex;align-items:center;gap:0.5rem;}
+    .greeting p{opacity:0.75;}
+    .header-right i{margin-left:1rem;font-size:1.4rem;cursor:pointer;}
+
+    .content{padding:1rem 2rem;overflow-y:auto;flex:1;}
+
+    /* MODULE */
+    .module{background:#1E2126;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;transition:box-shadow .2s;}
+    .module:hover{box-shadow:0 8px 20px rgba(0,0,0,0.6);}
+    .module h3{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;font-size:1.2rem;}
+    .module h3 i{color:var(--accent-light);}
+    .module label{display:block;margin-bottom:0.5rem;font-weight:500;}
+    .module input[type="text"], .module input[type="number"], .module select, .module textarea {
+      width:100%; padding:0.6rem; margin-bottom:1rem; border-radius:6px; border:1px solid #29303A;
+      background:transparent; color:inherit;
+    }
+    .module input[type="file"]{margin-bottom:1rem;}
+    .module button{padding:0.6rem 1.2rem;border-radius:6px;background:var(--accent-light);color:#0D1117;transition:background .2s;}
+    .module button:hover{background:var(--accent-dark);}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:1.5rem;}
+    .stat-card{background:#1E2126;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:1rem;}
+    .stat-card i{font-size:1.8rem;color:var(--accent-light);}
+    .stat-card .details h3{font-size:1.1rem;margin-bottom:0.3rem;}
+    .stat-card .details p{opacity:0.8;}
+
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="brand"><i class="fas fa-medkit"></i><span>Vitra</span></div>
+    <nav class="nav-links">
+      <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="herbs.html"><i class="fas fa-seedling"></i><span>Herbs</span></a>
+      <a href="mental.html"><i class="fas fa-brain"></i><span>Mental</span></a>
+      <a href="diet.html"><i class="fas fa-utensils"></i><span>Diet</span></a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>Pharmacy</span></a>
+      <a href="booking.html"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
+      <a href="#" class="active"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <header>
+      <div class="header-left">
+        <i id="toggleSidebarBtn" class="fas fa-bars"></i>
+        <div class="greeting">
+          <h1><i class="fas fa-cog"></i> Settings</h1>
+          <p>Customize your Vitra experience</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <i class="fas fa-bell"></i>
+        <i class="fas fa-user-circle"></i>
+        <i id="themeToggle" class="fas fa-moon"></i>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Usage Stats -->
+      <div class="stats">
+        <div class="stat-card"><i class="fas fa-seedling"></i>
+          <div class="details"><h3>Herb IDs</h3><p id="stat-id">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-smile-beam"></i>
+          <div class="details"><h3>Mood Logs</h3><p id="stat-mood">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-utensils"></i>
+          <div class="details"><h3>Meals</h3><p id="stat-meal">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-pills"></i>
+          <div class="details"><h3>Scripts</h3><p id="stat-scripts">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-calendar-check"></i>
+          <div class="details"><h3>Bookings</h3><p id="stat-booking">0</p></div>
+        </div>
+      </div>
+
+      <!-- Profile Settings -->
+      <div class="module">
+        <h3><i class="fas fa-user-circle"></i> Profile</h3>
+        <label>Display Name</label>
+        <input type="text" id="profileName" placeholder="Your name">
+        <label>Profile Picture</label>
+        <input type="file" id="profilePic" accept="image/*">
+        <img id="picPreview" src="" alt="Preview" style="width:80px;border-radius:50%;display:none;margin-top:0.5rem;">
+      </div>
+
+      <!-- Appearance & Theme -->
+      <div class="module">
+        <h3><i class="fas fa-paint-brush"></i> Appearance</h3>
+        <label><input type="checkbox" id="themeToggleSetting"> Light Mode</label>
+        <label>Primary Accent</label>
+        <select id="accentColor">
+          <option value="#8ECDF1">Pale Blue</option>
+          <option value="#F28C8C">Soft Red</option>
+          <option value="#8CF2A2">Mint Green</option>
+        </select>
+      </div>
+
+      <!-- Notifications -->
+      <div class="module">
+        <h3><i class="fas fa-bell"></i> Notifications</h3>
+        <label><input type="checkbox" id="notifReminders"> Appointment Reminders</label>
+        <label><input type="checkbox" id="notifPrompts"> Daily Prompts</label>
+        <label><input type="checkbox" id="notifUpdates"> AI Model Updates</label>
+      </div>
+
+      <!-- AI Preferences -->
+      <div class="module">
+        <h3><i class="fas fa-robot"></i> AI Settings</h3>
+        <label>AI Sensitivity: <span id="aiLevelVal">3</span></label>
+        <input type="range" id="aiLevel" min="1" max="5" value="3">
+        <label><input type="checkbox" id="aiAutoSuggest"> Auto-suggestions</label>
+        <label><input type="checkbox" id="aiVoice"> Voice Assistant</label>
+      </div>
+
+      <!-- Health Goals -->
+      <div class="module">
+        <h3><i class="fas fa-bullseye"></i> Health Goals</h3>
+        <label>Daily Step Goal</label>
+        <input type="number" id="goalSteps" min="1000" placeholder="e.g. 8000 steps">
+        <label>Water Intake Goal (glasses)</label>
+        <input type="number" id="goalWater" min="1" placeholder="e.g. 8">
+        <label>Sleep Goal (hrs)</label>
+        <input type="number" id="goalSleep" min="4" max="12" placeholder="e.g. 8">
+      </div>
+
+      <!-- Localization -->
+      <div class="module">
+        <h3><i class="fas fa-language"></i> Localization</h3>
+        <label>Preferred Language</label>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+        </select>
+        <label>Units</label>
+        <select id="unitSelect">
+          <option value="metric">Metric (kg, cm)</option>
+          <option value="imperial">Imperial (lbs, in)</option>
+        </select>
+      </div>
+
+      <!-- Data & Privacy -->
+      <div class="module">
+        <h3><i class="fas fa-user-shield"></i> Data & Privacy</h3>
+        <button id="exportData"><i class="fas fa-file-export"></i> Export My Data</button>
+        <button id="resetStats" style="margin-left:1rem;"><i class="fas fa-sync-alt"></i> Reset All Stats</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Sidebar toggle
+    const sb = document.getElementById('sidebar'),
+          toggles = document.querySelectorAll('.toggle-sidebar,#toggleSidebarBtn');
+    toggles.forEach(t=>t.onclick=()=>sb.classList.toggle('collapsed'));
+
+    // Theme settings
+    const themeToggleSett = document.getElementById('themeToggleSetting'),
+          themeIcon = document.getElementById('themeToggle');
+    function applyTheme(light){
+      document.documentElement.classList.toggle('light', light);
+      themeToggleSett.checked = light;
+      themeIcon.classList.toggle('fa-sun', light);
+      themeIcon.classList.toggle('fa-moon', !light);
+      localStorage.setItem('lightMode', light);
+    }
+    themeToggleSett.onchange = ()=> applyTheme(themeToggleSett.checked);
+    themeIcon.onclick = ()=> applyTheme(!document.documentElement.classList.contains('light'));
+    applyTheme(localStorage.getItem('lightMode')==='true');
+
+    // Accent color
+    const accentSelect = document.getElementById('accentColor');
+    accentSelect.onchange = ()=>{
+      document.documentElement.style.setProperty('--accent-light', accentSelect.value);
+      localStorage.setItem('accent', accentSelect.value);
+    };
+    if(localStorage.getItem('accent')){
+      accentSelect.value = localStorage.getItem('accent');
+      accentSelect.onchange();
+    }
+
+    // Profile settings
+    const nameInput = document.getElementById('profileName'),
+          picInput = document.getElementById('profilePic'),
+          picPreview = document.getElementById('picPreview');
+    nameInput.value = localStorage.getItem('profileName')||'';
+    nameInput.onchange = ()=> localStorage.setItem('profileName', nameInput.value);
+    picInput.onchange = ()=>{
+      const file = picInput.files[0], reader=new FileReader();
+      reader.onload=e=>{
+        picPreview.src=e.target.result; picPreview.style.display='block';
+        localStorage.setItem('profilePic', e.target.result);
+      };
+      file&&reader.readAsDataURL(file);
+    };
+    if(localStorage.getItem('profilePic')){
+      picPreview.src = localStorage.getItem('profilePic'); picPreview.style.display='block';
+    }
+
+    // Notification toggles
+    ['notifReminders','notifPrompts','notifUpdates'].forEach(id=>{
+      const el=document.getElementById(id);
+      el.checked = localStorage.getItem(id)==='true';
+      el.onchange = ()=> localStorage.setItem(id, el.checked);
+    });
+
+    // AI preferences
+    const aiLevel = document.getElementById('aiLevel'),
+          aiLevelVal = document.getElementById('aiLevelVal'),
+          aiAuto = document.getElementById('aiAutoSuggest'),
+          aiVoice = document.getElementById('aiVoice');
+    aiLevel.value = localStorage.getItem('aiLevel')||3;
+    aiLevelVal.textContent = aiLevel.value;
+    aiLevel.oninput = ()=>{
+      aiLevelVal.textContent = aiLevel.value;
+      localStorage.setItem('aiLevel', aiLevel.value);
+    };
+    [aiAuto, aiVoice].forEach(id=>{
+      id.checked = localStorage.getItem(id.id)==='true';
+      id.onchange = ()=> localStorage.setItem(id.id, id.checked);
+    });
+
+    // Goals
+    ['goalSteps','goalWater','goalSleep'].forEach(id=>{
+      const el=document.getElementById(id);
+      el.value = localStorage.getItem(id)||'';
+      el.onchange = ()=> localStorage.setItem(id, el.value);
+    });
+
+    // Localization
+    const langSelect = document.getElementById('langSelect'),
+          unitSelect = document.getElementById('unitSelect');
+    [langSelect, unitSelect].forEach(el=>{
+      el.value = localStorage.getItem(el.id)||el.value;
+      el.onchange = ()=> localStorage.setItem(el.id, el.value);
+    });
+
+    // Export Data
+    document.getElementById('exportData').onclick = ()=>{
+      const data = {...localStorage};
+      const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob),
+            a = document.createElement('a');
+      a.href = url; a.download = 'vitra-data.json'; a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Reset Stats
+    document.getElementById('resetStats').onclick = ()=>{
+      ['id','mood','meal','scripts','booking','sugg','resch','cancel'].forEach(k=> localStorage.setItem(k,'0'));
+      location.reload();
+    };
+
+    // Initialize usage stats
+    ['id','mood','meal','scripts','booking'].forEach(k=>{
+      document.getElementById(`stat-${k}`).textContent = localStorage.getItem(k)||0;
+    });
+  </script>
+</body>
+</html>
