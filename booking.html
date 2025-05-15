@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Vitra – Booking</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* RESET & BASE */
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
+    body{display:flex;height:100vh;overflow:hidden;background:#0D1117;color:#E0E0E0;transition:background .3s,color .3s;}
+    a{color:inherit;text-decoration:none;}button{cursor:pointer;border:none;background:none;color:inherit;}
+    :root{--accent-light:#8ECDF1;--accent-dark:#5DAEDC;}
+    html.light body{background:#F5F5F5;color:#222;}
+
+    /* SIDEBAR */
+    #sidebar{width:240px;background:#161B22;display:flex;flex-direction:column;transition:width .3s;}
+    #sidebar.collapsed{width:64px;}
+    .brand{display:flex;align-items:center;gap:0.75rem;padding:1.5rem;font-size:1.3rem;font-weight:700;color:var(--accent-light);}
+    .brand i{font-size:1.6rem;}
+    #sidebar.collapsed .brand span{display:none;}
+    .nav-links{flex:1;}
+    .nav-links a{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;transition:background .2s;color:#C9D1D9;}
+    .nav-links a:hover, .nav-links a.active{background:rgba(142,205,241,0.2);color:#FFF;}
+    #sidebar.collapsed .nav-links a span{display:none;}
+    .nav-links a i{width:24px;text-align:center;font-size:1.2rem;color:var(--accent-light);}
+    .toggle-sidebar{padding:1rem;text-align:center;cursor:pointer;border-top:1px solid #29303A;}
+    .toggle-sidebar i{font-size:1.2rem;color:var(--accent-light);}
+
+    /* MAIN */
+    #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(13,17,23,0.85);backdrop-filter:blur(6px);}
+    .header-left{display:flex;align-items:center;gap:1rem;}
+    .header-left i{font-size:1.4rem;cursor:pointer;}
+    .greeting h1{font-size:1.9rem;display:flex;align-items:center;gap:0.5rem;}
+    .greeting p{opacity:0.75;}
+    .header-right i{margin-left:1rem;font-size:1.4rem;cursor:pointer;}
+
+    .content{padding:1rem 2rem;overflow-y:auto;flex:1;}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:1.5rem;}
+    .stat-card{background:#1E2126;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:1rem;}
+    .stat-card i{font-size:1.8rem;color:var(--accent-light);}
+    .stat-card .details h3{font-size:1.1rem;margin-bottom:0.3rem;}
+    .stat-card .details p{opacity:0.8;}
+
+    /* GRID UTILS */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+    .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:1.5rem;}
+
+    .card{background:#1E2126;border-radius:12px;padding:1rem;transition:transform .2s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.6);}
+    .card-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;}
+    .card-header i{font-size:1.5rem;color:var(--accent-light);}
+
+    .chart-box{background:#1E2126;border-radius:12px;padding:1rem;margin-bottom:1.5rem;}
+    .chart-box canvas{width:100%!important;height:180px!important;}
+
+    /* FEATURE MODULES */
+    .module{margin-bottom:1.5rem;}
+    .module h3{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:1.2rem;}
+    .module h3 i{color:var(--accent-light);}
+    .module .row{display:flex;gap:0.5rem;flex-wrap:wrap;}
+    .module input, .module select{flex:1;padding:0.6rem;border-radius:6px;border:1px solid #29303A;background:transparent;color:inherit;}
+    .module button{padding:0.6rem 1rem;border-radius:6px;background:var(--accent-light);color:#0D1117;}
+
+    /* APPOINTMENTS LIST */
+    .appt-list li{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid #29303A;}
+    .appt-list li:last-child{border-bottom:none;}
+    .appt-list i{cursor:pointer;color:red;}
+  </style>
+</head>
+<body>
+  <aside id="sidebar">
+    <div class="brand"><i class="fas fa-medkit"></i><span>Vitra</span></div>
+    <nav class="nav-links">
+      <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="herbs.html"><i class="fas fa-seedling"></i><span>Herbs</span></a>
+      <a href="mental.html"><i class="fas fa-brain"></i><span>Mental</span></a>
+      <a href="diet.html"><i class="fas fa-utensils"></i><span>Diet</span></a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>Pharmacy</span></a>
+      <a href="booking.html" class="active"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
+      <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
+  </aside>
+
+  <div id="main">
+    <header>
+      <div class="header-left">
+        <i id="toggleSidebarBtn" class="fas fa-bars"></i>
+        <div class="greeting">
+          <h1><i class="fas fa-calendar-check"></i> Booking</h1>
+          <p>AI-powered scheduling & reminders</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <i class="fas fa-bell"></i>
+        <i class="fas fa-user-circle"></i>
+        <i id="themeToggle" class="fas fa-moon"></i>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-card"><i class="fas fa-calendar-plus"></i>
+          <div class="details"><h3>Booked</h3><p id="stat-booking">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-robot"></i>
+          <div class="details"><h3>AI Suggestions</h3><p id="stat-sugg">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-edit"></i>
+          <div class="details"><h3>Reschedules</h3><p id="stat-resch">0</p></div>
+        </div>
+        <div class="stat-card"><i class="fas fa-trash-alt"></i>
+          <div class="details"><h3>Cancellations</h3><p id="stat-cancel">0</p></div>
+        </div>
+      </div>
+
+      <!-- Upcoming Appointments Chart -->
+      <div class="chart-box">
+        <h4><i class="fas fa-chart-line"></i> Appointments This Week</h4>
+        <canvas id="bookingChart"></canvas>
+      </div>
+
+      <!-- AI Suggestion Module -->
+      <div class="module card">
+        <h3><i class="fas fa-robot"></i> AI Best-Time Suggestion</h3>
+        <div class="row">
+          <select id="specialty">
+            <option>General Practitioner</option><option>Dermatologist</option><option>Psychiatrist</option><option>Dietician</option>
+          </select>
+          <button id="getSuggestion">Suggest Time</button>
+        </div>
+        <p id="suggestionResult" style="margin-top:0.8rem;opacity:0.8;"></p>
+      </div>
+
+      <!-- Schedule Appointment -->
+      <div class="module card">
+        <h3><i class="fas fa-calendar-plus"></i> Schedule Appointment</h3>
+        <div class="row">
+          <select id="doctor">
+            <option>Dr. Smith</option><option>Dr. Lee</option><option>Dr. Patel</option><option>Dr. Nguyen</option>
+          </select>
+          <input type="date" id="apptDate">
+          <input type="time" id="apptTime">
+          <button id="bookAppt">Book</button>
+        </div>
+        <p id="bookResult"></p>
+      </div>
+
+      <!-- Reschedule / Cancel -->
+      <div class="module card">
+        <h3><i class="fas fa-edit"></i> Manage Appointments</h3>
+        <ul class="appt-list" id="apptList"></ul>
+      </div>
+
+      <!-- Reminder Setup -->
+      <div class="module card">
+        <h3><i class="fas fa-bell"></i> Set Reminder</h3>
+        <div class="row">
+          <select id="remAppt"></select>
+          <input type="time" id="remTime">
+          <button id="setRem">Set</button>
+        </div>
+        <p id="remResult"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar toggle
+    const sb = document.getElementById('sidebar'),
+          toggles = document.querySelectorAll('.toggle-sidebar,#toggleSidebarBtn');
+    toggles.forEach(t=>t.onclick = ()=> sb.classList.toggle('collapsed'));
+
+    // Theme toggle
+    const tt = document.getElementById('themeToggle');
+    tt.onclick = function(){
+      document.documentElement.classList.toggle('light');
+      this.classList.toggle('fa-sun'); this.classList.toggle('fa-moon');
+    };
+
+    // Initialize stats
+    ['booking','sugg','resch','cancel'].forEach(k=>{
+      if(!localStorage.getItem(k)) localStorage.setItem(k,'0');
+      document.getElementById(`stat-${k}`).textContent = localStorage.getItem(k);
+    });
+
+    // Booking data store
+    let appts = JSON.parse(localStorage.getItem('appts')||'[]');
+
+    // Refresh appointment list
+    function refreshList(){
+      const list = document.getElementById('apptList'),
+            remSelect = document.getElementById('remAppt');
+      list.innerHTML = ''; remSelect.innerHTML = '<option value="">Select</option>';
+      appts.forEach((a,i)=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${a.doc} – ${a.date} ${a.time}</span>
+                        <span>
+                          <i data-i="${i}" class="fas fa-edit resch"></i>
+                          <i data-i="${i}" class="fas fa-trash-alt cancel"></i>
+                        </span>`;
+        list.appendChild(li);
+        if(remSelect) {
+          const opt = document.createElement('option');
+          opt.value = i; opt.text = `${a.doc} ${a.date} ${a.time}`;
+          remSelect.appendChild(opt);
+        }
+      });
+    }
+
+    refreshList();
+
+    // AI Suggestion mock
+    document.getElementById('getSuggestion').onclick = ()=>{
+      const spec = document.getElementById('specialty').value,
+            res = document.getElementById('suggestionResult'),
+            count = +localStorage.getItem('sugg')+1;
+      localStorage.setItem('sugg',count);
+      document.getElementById('stat-sugg').textContent = count;
+      res.textContent = `Suggested next slot for ${spec}: ${new Date(Date.now()+86400000).toLocaleDateString()} at 10:00 AM.`;
+    };
+
+    // Book appointment
+    document.getElementById('bookAppt').onclick = ()=>{
+      const doc = document.getElementById('doctor').value,
+            date = document.getElementById('apptDate').value,
+            time = document.getElementById('apptTime').value,
+            res = document.getElementById('bookResult');
+      if(!doc||!date||!time){ res.textContent='Fill all fields.'; return; }
+      appts.push({doc,date,time});
+      localStorage.setItem('appts', JSON.stringify(appts));
+      refreshList();
+      const b = +localStorage.getItem('booking')+1;
+      localStorage.setItem('booking',b);
+      document.getElementById('stat-booking').textContent=b;
+      res.textContent=`Appointment booked with ${doc} on ${date} at ${time}.`;
+    };
+
+    // Reschedule & cancel
+    document.getElementById('apptList').onclick = e=>{
+      if(e.target.classList.contains('resch')){
+        const i = e.target.dataset.i;
+        const newDate = prompt('New date (YYYY-MM-DD):',appts[i].date),
+              newTime = prompt('New time (HH:MM):',appts[i].time);
+        if(newDate&&newTime){
+          appts[i].date=newDate; appts[i].time=newTime;
+          localStorage.setItem('appts',JSON.stringify(appts));
+          refreshList();
+          const r = +localStorage.getItem('resch')+1;
+          localStorage.setItem('resch',r);
+          document.getElementById('stat-resch').textContent=r;
+        }
+      }
+      if(e.target.classList.contains('cancel')){
+        const i = e.target.dataset.i;
+        appts.splice(i,1);
+        localStorage.setItem('appts',JSON.stringify(appts));
+        refreshList();
+        const c = +localStorage.getItem('cancel')+1;
+        localStorage.setItem('cancel',c);
+        document.getElementById('stat-cancel').textContent=c;
+      }
+    };
+
+    // Reminder setup
+    document.getElementById('setRem').onclick = ()=>{
+      const idx = document.getElementById('remAppt').value,
+            time = document.getElementById('remTime').value,
+            res = document.getElementById('remResult');
+      if(idx===''){ res.textContent='Select appointment.'; return; }
+      if(!time){ res.textContent='Select time.'; return; }
+      res.textContent = `Reminder set for ${appts[idx].doc} at ${time} on ${appts[idx].date}.`;
+    };
+
+    // Appointments this week chart
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const counts = Array(7).fill(0);
+    appts.forEach(a=>{
+      const d = new Date(a.date).getDay();
+      counts[d]++;
+    });
+    new Chart(document.getElementById('bookingChart').getContext('2d'),{
+      type:'bar',
+      data:{labels:days,datasets:[{data:counts,backgroundColor:'var(--accent-light)'}]},
+      options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    });
+  </script>
+</body>
+</html>
