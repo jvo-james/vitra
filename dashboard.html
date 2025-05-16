@@ -11,42 +11,74 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ========== RESET & BASE ========== */
+    /* ===== Reset & Base ===== */
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
     body { display:flex; min-height:100vh; background:#0D1117; color:#E0E0E0; overflow:hidden; }
     a { color:inherit; text-decoration:none; }
-    button { cursor:pointer; border:none; background:none; color:inherit; }
-    h3 { font-size:1rem; margin-bottom:.5rem; }
-    /* ========== COLORS ========== */
+    button { cursor:pointer; background:none; border:none; color:inherit; }
+
+    /* ===== Colors & Accents ===== */
     :root {
-      --accent:#8ECDF1; --bg:#1E2126; --bg2:#161B22; --muted:#888;
+      --accent: #8ECDF1;
+      --dark:    #1E2126;
+      --dark2:   #161B22;
+      --muted:   rgba(224,224,224,0.6);
     }
-    /* ========== SIDEBAR ========== */
+
+    /* ===== Sidebar ===== */
     #sidebar {
-      width:220px; background:var(--bg2); position:sticky; top:0; height:100vh;
+      width:240px; background:var(--dark2); position:sticky; top:0; height:100vh;
       display:flex; flex-direction:column;
     }
-    .brand { padding:1.5rem; font-size:1.2rem; font-weight:700; color:var(--accent); }
-    .nav { flex:1; overflow:auto; }
-    .nav a {
-      display:flex; align-items:center; padding:.75rem 1rem; gap:.75rem;
+    .brand { padding:1.5rem; font-size:1.3rem; font-weight:700; color:var(--accent); }
+    nav a {
+      display:flex; align-items:center; gap:.75rem; padding:.9rem 1.2rem;
       transition:background .2s;
     }
-    .nav a.active,
-    .nav a:hover { background:rgba(142,205,241,0.1); }
-    .nav i { width:20px; text-align:center; }
-    /* ========== HEADER ========== */
+    nav a.active, nav a:hover { background:rgba(142,205,241,0.1); }
+    nav i { width:24px; text-align:center; }
+
+    /* ===== Header ===== */
     header {
-      position:sticky; top:0; z-index:10; background:var(--bg2);
+      position:sticky; top:0; z-index:10; background:rgba(13,17,23,0.95);
       display:flex; justify-content:space-between; align-items:center;
       padding:1rem 1.5rem; backdrop-filter:blur(6px);
     }
     .greet { display:flex; align-items:center; gap:.5rem; }
-    .greet i { font-size:1.4rem; }
-    /* ========== MAIN ========== */
+    .greet h3 { font-weight:400; }
+
+    /* ===== Main & Content ===== */
     #main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
     .content { flex:1; overflow-y:auto; padding:1rem 1.5rem; }
-    /* ========== TOOLBAR ========== */
+
+    /* ===== Grid & Cards ===== */
+    .grid { display:grid; gap:1rem; }
+    .grid-3 { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+    .grid-2 { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    .card {
+      background:var(--dark); border-radius:8px; padding:1rem; position:relative;
+      transition:transform .2s;
+    }
+    .card:hover { transform:translateY(-4px); }
+    .card h4 { margin-bottom:.5rem; font-size:1rem; }
+    .small { font-size:.9rem; color:var(--muted); }
+
+    /* ===== Charts ===== */
+    .chart { width:100%; height:160px!important; }
+
+    /* ===== Notifications ===== */
+    #notifIcon { font-size:1.4rem; cursor:pointer; position:relative; }
+    #notifMenu {
+      position:absolute; top:calc(100% + 6px); right:0; width:300px;
+      background:var(--dark); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.3);
+      display:none; overflow:hidden; z-index:10;
+    }
+    #notifMenu header { background:var(--accent); padding:.5rem 1rem; font-weight:600; color:#000; display:flex; justify-content:space-between; }
+    #notifMenu .item { padding:.6rem 1rem; display:flex; justify-content:space-between; font-size:.9rem; }
+    #notifMenu .item + .item { border-top:1px solid #29303A; }
+    #notifMenu footer { text-align:center; padding:.5rem; background:rgba(224,224,224,0.05); }
+
+    /* ===== Toolbar ===== */
     .toolbar {
       position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:12px;
     }
@@ -54,38 +86,47 @@
       width:50px; height:50px; border-radius:50%; background:var(--accent);
       display:flex; align-items:center; justify-content:center; font-size:1.2rem;
     }
-    /* ========== CARDS & GRID ========== */
-    .grid { display:grid; gap:1rem; }
-    .grid-3 { grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); }
-    .grid-2 { grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
-    .card {
-      background:var(--bg); border-radius:8px; padding:.75rem; position:relative;
-      transition:transform .2s;
+
+    /* ===== Widgets ===== */
+    #widgets { margin:1rem 0; }
+    .widget { cursor:pointer; }
+
+    /* ===== Inputs & Sliders ===== */
+    .slider-container { display:flex; align-items:center; gap:.5rem; }
+    .slider-container input { width:100%; }
+
+    /* ===== Calendar ===== */
+    .calendar { width:100%; border-collapse:collapse; margin-top:.5rem; }
+    .calendar th, .calendar td {
+      width:14.28%; padding:.5rem; text-align:center; cursor:pointer; font-size:.85rem;
     }
-    .card:hover { transform:translateY(-3px); }
-    .card .header { display:flex; justify-content:space-between; align-items:center; }
-    .card .header i { cursor:pointer; }
-    .collapsible { max-height:200px; overflow:hidden; transition:max-height .3s ease; }
-    .collapsed .collapsible { max-height:0; }
-    /* ========== CHARTS ========== */
-    .chart { width:100%; height:150px; }
-    /* ========== MODAL ========== */
+    .calendar th { background:rgba(142,205,241,0.1); }
+    .calendar .today { background:var(--accent); border-radius:4px; }
+
+    /* ===== Modal ===== */
     .modal-backdrop {
-      position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none;
-      align-items:center; justify-content:center; z-index:20;
+      position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      display:none; align-items:center; justify-content:center; z-index:20;
     }
     .modal {
-      background:var(--bg); padding:1rem; border-radius:8px; width:90%; max-width:400px;
+      background:var(--dark); padding:1rem; border-radius:8px; width:90%; max-width:400px;
     }
-    .modal header { font-weight:600; margin-bottom:.5rem; display:flex; justify-content:space-between; }
+    .modal header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
     .modal header i { cursor:pointer; }
+
+    /* ===== Responsive ===== */
+    @media(max-width:768px) {
+      #sidebar { position:fixed; left:-240px; transition:left .3s; }
+      #sidebar.show { left:0; }
+      .toolbar { right:10px; }
+    }
   </style>
 </head>
 <body>
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="brand"><i class="fas fa-medkit"></i> Vitra</div>
-    <nav class="nav">
+    <nav>
       <a href="dashboard.html" class="active"><i class="fas fa-home"></i>Dashboard</a>
       <a href="herbs.html"><i class="fas fa-seedling"></i>Herbs</a>
       <a href="mental.html"><i class="fas fa-brain"></i>Mental</a>
@@ -101,114 +142,202 @@
     <header>
       <div class="greet"><i class="fas fa-smile-wink"></i><h3>Hi Alex!</h3></div>
       <div style="position:relative;">
-        <i id="bell" class="fas fa-bell" style="font-size:1.4rem;"></i>
-        <div id="notif" class="dropdown" style="right:0; top:calc(100% + 5px);">
-          <header>Notifications <i id="clear" class="fas fa-times" style="font-size:1rem;cursor:pointer;"></i></header>
-          <div class="item">Cholesterol result ready <i class="fas fa-ellipsis-h"></i></div>
-          <div class="item">Appointment at 11AM <i class="fas fa-ellipsis-h"></i></div>
+        <i id="notifIcon" class="fas fa-bell"></i>
+        <div id="notifMenu">
+          <header>Notifications <i id="closeNotif" class="fas fa-times"></i></header>
+          <div class="item">Lab: Cholesterol ↑ <i class="fas fa-ellipsis-h"></i></div>
+          <div class="item">Appt: Dr. Taylor @11AM <i class="fas fa-ellipsis-h"></i></div>
+          <footer><button id="viewAllNotifs">View All</button></footer>
         </div>
       </div>
     </header>
+
     <div class="content">
-      <!-- INSIGHTS CARD -->
-      <div class="card" id="insights">
-        <div class="header">
-          <h3><i class="fas fa-lightbulb"></i>Insights</h3>
-          <i id="toggleInsights" class="fas fa-chevron-down"></i>
+      <!-- AI Search -->
+      <div class="card">
+        <h4><i class="fas fa-robot"></i>Herb AI Search</h4>
+        <div style="display:flex; gap:.5rem; margin-top:.5rem;">
+          <input id="herbQ" placeholder="Ask about a herb…" style="flex:1; padding:.5rem; border-radius:4px; border:1px solid #29303A; background:var(--dark2);"/>
+          <button id="askHerb" style="padding:.5rem 1rem; background:var(--accent); border-radius:4px;"><i class="fas fa-question"></i></button>
         </div>
-        <div class="collapsible">
-          <p>Sleep ↓20m: aim for earlier wind-down.</p>
-          <p>Hydration 4/8 cups — keep sipping.</p>
+        <p id="herbA" class="small" style="margin-top:.5rem;"></p>
+      </div>
+
+      <!-- Widgets -->
+      <div id="widgets" class="grid grid-3">
+        <div class="card widget" id="moodWidget">
+          <h4><i class="fas fa-smile-beam"></i> Mood</h4>
+          <div class="slider-container"><span>😞</span><input type="range" min="1" max="5" value="3" id="moodRange"/><span>😁</span></div>
+          <p class="small">Current: <span id="moodVal">3</span>/5</p>
+        </div>
+        <div class="card widget">
+          <h4><i class="fas fa-tint"></i> Water</h4>
+          <div class="slider-container"><input type="number" id="waterIn" min="0" max="10" value="5" style="width:50px;"/><span>glasses</span></div>
+          <p class="small">Goal: 8</p>
+        </div>
+        <div class="card widget">
+          <h4><i class="fas fa-walking"></i> Steps</h4>
+          <p><strong id="stepCount">8,421</strong> steps</p>
+        </div>
+        <div class="card widget">
+          <h4><i class="fas fa-bed"></i> Sleep</h4>
+          <p><strong>6h 45m</strong> last night</p>
         </div>
       </div>
 
-      <!-- WIDGET CAROUSEL -->
-      <div class="grid grid-3" id="widgets">
-        <div class="card">
-          <h3><i class="fas fa-leaf"></i></h3>
-          <p><strong>Turmeric</strong><br>Anti-inflammatory</p>
-        </div>
-        <div class="card">
-          <h3><i class="fas fa-smile-beam"></i></h3>
-          <p><strong>Mood:</strong> 😊<br>3 logs today</p>
-        </div>
-        <div class="card">
-          <h3><i class="fas fa-walking"></i></h3>
-          <p><strong>Steps:</strong> 8.2k<br>Goal:10k</p>
-        </div>
-        <div class="card">
-          <h3><i class="fas fa-bed"></i></h3>
-          <p><strong>Sleep:</strong> 6.5h<br>Score:82</p>
-        </div>
-      </div>
-
-      <!-- CHARTS -->
+      <!-- Charts -->
       <div class="grid grid-2">
         <div class="card">
-          <h3><i class="fas fa-utensils"></i>Nutrition</h3>
-          <canvas id="c1" class="chart"></canvas>
+          <h4><i class="fas fa-utensils"></i> Nutrition</h4>
+          <canvas id="chartNut" class="chart"></canvas>
         </div>
         <div class="card">
-          <h3><i class="fas fa-heartbeat"></i>Wellness</h3>
-          <canvas id="c2" class="chart"></canvas>
+          <h4><i class="fas fa-heartbeat"></i> Wellness</h4>
+          <canvas id="chartWell" class="chart"></canvas>
         </div>
       </div>
       <div class="card" style="margin-top:1rem;">
-        <h3><i class="fas fa-chart-line"></i>Activity</h3>
-        <canvas id="c3" class="chart"></canvas>
+        <h4><i class="fas fa-chart-line"></i> Activity</h4>
+        <canvas id="chartAct" class="chart"></canvas>
+      </div>
+
+      <!-- Medication -->
+      <div class="card" style="margin-top:1rem;">
+        <h4><i class="fas fa-pills"></i> Meds</h4>
+        <ul style="list-style:none; margin-top:.5rem;">
+          <li><input type="checkbox" checked> Metformin 500 mg – 08:00</li>
+          <li><input type="checkbox"> Vitamin D – 20:00</li>
+        </ul>
+        <button id="refillAll" style="margin-top:.5rem; padding:.5rem 1rem; background:var(--accent); border-radius:4px;">Refill All</button>
+      </div>
+
+      <!-- Calendar + Appts -->
+      <div class="grid grid-2" style="margin-top:1rem;">
+        <div class="card">
+          <h4><i class="fas fa-calendar-alt"></i> Calendar</h4>
+          <table class="calendar">
+            <thead><tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr></thead>
+            <tbody>
+              <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+              <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
+              <tr><td>13</td><td>14</td><td>15</td><td class="today">16</td><td>17</td><td>18</td><td>19</td></tr>
+              <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+              <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card">
+            <h4><i class="fas fa-user-md"></i> Appointments</h4>
+            <ul class="small" style="list-style:none; margin-top:.5rem;">
+              <li>Dr. Taylor – May 18 @ 11AM</li>
+              <li>Telehealth – May 20 @ 10AM</li>
+            </ul>
+          </div>
+          <div class="card" style="margin-top:1rem;">
+            <h4><i class="fas fa-syringe"></i> Doses</h4>
+            <ul class="small" style="list-style:none; margin-top:.5rem;">
+              <li>Vitamin C – May 17 @ 08:00</li>
+              <li>Omega-3 – May 17 @ 20:00</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- News & Tips -->
+      <div class="grid grid-2" style="margin-top:1rem;">
+        <div class="card">
+          <h4><i class="fas fa-newspaper"></i> News</h4>
+          <div style="max-height:150px; overflow-y:auto; font-size:.9rem; margin-top:.5rem; color:var(--muted);">
+            <p>• Turmeric’s anti-inflammatory power</p>
+            <p>• 5 tips to improve sleep tonight</p>
+            <p>• Guided mindful breathing</p>
+            <p>• Diet hacks for steady energy</p>
+          </div>
+        </div>
+        <div class="card">
+          <h4><i class="fas fa-lightbulb"></i> Quick Tips</h4>
+          <ul style="font-size:.9rem; margin-top:.5rem; color:var(--muted);">
+            <li>Drink a glass of water first thing.</li>
+            <li>Stand and stretch every hour.</li>
+            <li>Take 5-minute meditation breaks.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- TOOLBAR -->
+  <!-- Toolbar -->
   <div class="toolbar">
-    <button id="book"><i class="fas fa-calendar-plus"></i></button>
-    <button id="refill"><i class="fas fa-prescription-bottle-alt"></i></button>
-    <button id="mood"><i class="fas fa-smile"></i></button>
-    <button id="call"><i class="fas fa-video"></i></button>
-    <button id="chat"><i class="fas fa-comment-medical"></i></button>
+    <button id="btnBook"><i class="fas fa-calendar-plus"></i></button>
+    <button id="btnRefill"><i class="fas fa-prescription-bottle-alt"></i></button>
+    <button id="btnChat"><i class="fas fa-comment-medical"></i></button>
+    <button id="btnSOS"><i class="fas fa-phone"></i></button>
   </div>
 
-  <!-- CHAT & MODAL -->
-  <div id="chatbox" class="modal-backdrop">
+  <!-- Chat Modal -->
+  <div id="chatModal" class="modal-backdrop">
     <div class="modal">
-      <header>Help <i id="closeChat" class="fas fa-times"></i></header>
-      <p>How can I assist?</p>
+      <header>Help Chat <i id="closeChat" class="fas fa-times"></i></header>
+      <p>Hi! How can I help you today?</p>
+      <input id="chatInput" placeholder="Type your question…" style="width:100%;padding:.5rem;border-radius:4px;border:1px solid #29303A;background:var(--dark2);margin-top:.5rem;"/>
     </div>
   </div>
 
   <script>
-    // Notifications toggle
-    document.getElementById('bell').onclick = e=>{
-      e.stopPropagation();
-      let n = document.getElementById('notif');
-      n.style.display = n.style.display==='block'?'none':'block';
-    };
-    document.getElementById('clear').onclick = ()=> document.getElementById('notif').style.display='none';
-    document.addEventListener('click', ()=> document.getElementById('notif').style.display='none');
+    // Notifications
+    const bell = document.getElementById('notifIcon'),
+          menu = document.getElementById('notifMenu'),
+          closeN = document.getElementById('closeNotif');
+    bell.onclick = e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; };
+    closeN.onclick = ()=> menu.style.display='none';
+    document.addEventListener('click', ()=> menu.style.display='none');
 
-    // Insights collapse
-    const ins = document.getElementById('insights'), tog = document.getElementById('toggleInsights');
-    tog.onclick = ()=> ins.classList.toggle('collapsed');
+    // Herb AI Search
+    document.getElementById('askHerb').onclick = ()=>{
+      const q = document.getElementById('herbQ').value.toLowerCase();
+      const out = document.getElementById('herbA');
+      if(!q) return out.textContent = 'Please ask about a herb.';
+      if(q.includes('turmeric')) out.textContent = 'Turmeric reduces inflammation & supports joints.';
+      else if(q.includes('gingko')) out.textContent = 'Ginkgo improves circulation & cognition.';
+      else out.textContent = 'Sorry, I don’t have info on that.';
+    };
+
+    // Mood slider
+    const moodR = document.getElementById('moodRange'), moodV = document.getElementById('moodVal');
+    moodR.oninput = ()=> moodV.textContent = moodR.value;
+
+    // Water intake
+    const waterIn = document.getElementById('waterIn');
+    waterIn.onchange = ()=> {
+      const w = waterIn.value;
+      alert(`Logged ${w} glasses of water.`);
+    };
+
+    // Step counter randomize
+    document.getElementById('stepCount').textContent = (Math.random()*4000+6000).toFixed(0);
 
     // Toolbar actions
-    document.getElementById('book').onclick  = ()=> location.href='booking.html';
-    document.getElementById('refill').onclick= ()=> location.href='pharmacy.html';
-    document.getElementById('mood').onclick  = ()=> alert('Mood logged!');
-    document.getElementById('call').onclick  = ()=> alert('Starting telehealth...');
-    document.getElementById('chat').onclick  = ()=> document.getElementById('chatbox').style.display='flex';
-    document.getElementById('closeChat').onclick = ()=> document.getElementById('chatbox').style.display='none';
+    document.getElementById('btnBook').onclick  = ()=> location.href='booking.html';
+    document.getElementById('btnRefill').onclick= ()=> location.href='pharmacy.html';
+    document.getElementById('btnChat').onclick  = ()=> document.getElementById('chatModal').style.display='flex';
+    document.getElementById('btnSOS').onclick   = ()=> alert('📞 Calling emergency contact...');
+
+    document.getElementById('closeChat').onclick = ()=> document.getElementById('chatModal').style.display='none';
 
     // Charts
-    new Chart(c1, { type:'doughnut',
+    new Chart(document.getElementById('chartNut'), {
+      type:'doughnut',
       data:{ labels:['Carbs','Protein','Fat'], datasets:[{ data:[50,30,20], backgroundColor:['#8ECDF1','#5DAEDC','#3E8ED0'] }] },
-      options:{ cutout:'70%' }
+      options:{ cutout: '70%' }
     });
-    new Chart(c2, { type:'line',
-      data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[72,75,78,83,79,85,80], borderColor:'#8ECDF1', fill:true }] },
+    new Chart(document.getElementById('chartWell'), {
+      type:'line',
+      data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[72,75,78,80,77,83,85], borderColor:'#8ECDF1', backgroundColor:'rgba(142,205,241,0.2)', fill:true }] },
       options:{ plugins:{legend:{display:false}} }
     });
-    new Chart(c3, { type:'bar',
+    new Chart(document.getElementById('chartAct'), {
+      type:'bar',
       data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[8,9,7,10,11,12,9], backgroundColor:'#8ECDF1' }] },
       options:{ scales:{ y:{ beginAtZero:true } } }
     });
