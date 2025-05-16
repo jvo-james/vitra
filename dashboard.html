@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Vitra Dashboard</title>
-  <!-- Fonts & Icons -->
+  <!-- Google Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet"/>
@@ -13,84 +13,104 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* RESET & BASE */
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
-    html,body{height:100%;}
-    body{display:flex;background:var(--bg);color:var(--text);transition:background .3s,color .3s;}
-    a{color:inherit;text-decoration:none;}button{cursor:pointer;border:none;background:none;color:inherit;}
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+    html, body { height:100%; }
+    body { display:flex; background:var(--bg); color:var(--text); transition:background .3s,color .3s; overflow:hidden; }
+    a { color:inherit; text-decoration:none; }
+    button { cursor:pointer; border:none; background:none; color:inherit; }
 
     /* THEME VARIABLES */
     :root {
-      --bg: #0D1117; --card: #161B22; --accent: #8ECDF1; --text: #E0E0E0;
+      --bg: #0D1117;
+      --card: #161B22;
+      --accent: #8ECDF1;       /* Pale blue */
+      --text: #E0E0E0;
       --muted: #888;
     }
     html.light {
-      --bg: #F5F5F5; --card: #FFFFFF; --accent: #8ECDF1; --text: #222; --muted: #555;
+      --bg: #F5F5F5;
+      --card: #FFFFFF;
+      --accent: #8ECDF1;
+      --text: #222;
+      --muted: #555;
     }
 
     /* SIDEBAR */
-    #sidebar{
-      width:240px;background:var(--card);display:flex;flex-direction:column;transition:width .3s;
+    #sidebar {
+      width:220px; background:var(--card); display:flex; flex-direction:column; transition:width .3s;
     }
-    #sidebar.collapsed{width:60px;}
-    .brand{padding:1rem;font-size:1.4rem;font-weight:700;color:var(--accent);text-align:center;}
-    .nav-links{flex:1;overflow:auto;}
-    .nav-links a{
-      display:flex;align-items:center;gap:1rem;padding:0.8rem 1rem;transition:background .2s;
+    #sidebar.collapsed { width:60px; }
+    .brand {
+      padding:1rem; font-size:1.4rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:0.5rem;
     }
-    .nav-links a.active,.nav-links a:hover{background:rgba(142,205,241,0.1);}
-    .nav-links a i{width:24px;font-size:1.2rem;color:var(--accent);text-align:center;}
-    .nav-links a span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    #sidebar.collapsed .nav-links a span{display:none;}
-    .toggle-btn{padding:1rem;text-align:center;cursor:pointer;border-top:1px solid var(--bg);}
-    .toggle-btn i{font-size:1.2rem;color:var(--accent);}
+    .brand svg { width:32px; height:32px; }
+    .nav-links { flex:1; overflow:auto; }
+    .nav-links a {
+      display:flex; align-items:center; gap:1rem; padding:0.8rem 1rem; transition:background .2s;
+    }
+    .nav-links a.active, .nav-links a:hover {
+      background:rgba(142,205,241,0.1);
+    }
+    .nav-links a i { width:24px; font-size:1.2rem; color:var(--accent); text-align:center; }
+    .nav-links a span { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #sidebar.collapsed .nav-links a span { display:none; }
+    .toggle-btn { padding:1rem; text-align:center; cursor:pointer; border-top:1px solid var(--bg); }
+    .toggle-btn i { font-size:1.2rem; color:var(--accent); }
 
     /* MAIN */
-    #main{flex:1;display:flex;flex-direction:column;}
-    header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:1rem 2rem;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,0.3);
+    #main { flex:1; display:flex; flex-direction:column; }
+    header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem; background:var(--card); box-shadow:0 2px 6px rgba(0,0,0,0.3);
     }
-    .header-left{display:flex;align-items:center;gap:1rem;}
-    .header-left i{font-size:1.4rem;cursor:pointer;color:var(--accent);}
-    .greeting h1{font-size:1.8rem;} .greeting p{font-size:0.9rem;color:var(--muted);}
-    .header-right i{margin-left:1rem;font-size:1.4rem;cursor:pointer;color:var(--accent);}
+    .header-left { display:flex; align-items:center; gap:1rem; }
+    .header-left i { font-size:1.4rem; cursor:pointer; color:var(--accent); }
+    .greeting h1 { font-size:1.8rem; color:var(--text); }
+    .greeting p { font-size:0.9rem; color:var(--muted); }
+    .header-right i { margin-left:1rem; font-size:1.4rem; cursor:pointer; color:var(--accent); }
 
-    .content{flex:1;overflow-y:auto;padding:1rem 2rem;background:var(--bg);}
+    .content { flex:1; overflow-y:auto; padding:1rem 2rem; background:var(--bg); }
 
-    /* LAYOUT */
-    .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;}
-    .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    /* GRID LAYOUTS */
+    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
 
     /* WIDGET */
-    .widget{
-      background:var(--card);border-radius:12px;padding:1rem;
-      display:flex;align-items:center;gap:1rem;
+    .widget {
+      background:var(--card); border-radius:12px; padding:1rem;
+      display:flex; align-items:center; gap:1rem;
       transition:transform .2s,box-shadow .2s;
     }
-    .widget:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.6);}
-    .widget i{font-size:2rem;color:var(--accent);}
-    .widget div h3{font-size:1.2rem;color:var(--text);}
-    .widget div p{color:var(--muted);}
+    .widget:hover {
+      transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.6);
+    }
+    .widget i { font-size:2rem; color:var(--accent); }
+    .widget div h3 { font-size:1.2rem; color:var(--text); }
+    .widget div p { color:var(--muted); }
 
     /* PANEL */
-    .panel{
-      background:var(--card);border-radius:12px;padding:1rem;margin-bottom:1.5rem;
+    .panel {
+      background:var(--card); border-radius:12px; padding:1rem; margin-bottom:1.5rem;
       transition:transform .2s,box-shadow .2s;
     }
-    .panel:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.6);}
-    .panel h3{display:flex;align-items:center;gap:0.5rem;color:var(--accent);margin-bottom:0.5rem;}
-    .panel ul{list-style:none;padding-left:0;}
-    .panel ul li{margin-bottom:0.4rem;color:var(--text);opacity:0.9;}
+    .panel:hover {
+      transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.6);
+    }
+    .panel h3 { display:flex; align-items:center; gap:0.5rem; color:var(--accent); margin-bottom:0.5rem; }
+    .panel ul { list-style:none; padding-left:0; }
+    .panel ul li { margin-bottom:0.4rem; color:var(--text); opacity:0.9; }
 
     /* CHART BOX */
-    .chart-box{
-      background:var(--card);border-radius:12px;padding:1rem;
+    .chart-box {
+      background:var(--card); border-radius:12px; padding:1rem;
       transition:transform .2s,box-shadow .2s;
     }
-    .chart-box:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.6);}
-    .chart-box h4{display:flex;align-items:center;gap:0.5rem;color:var(--accent);margin-bottom:0.5rem;}
-    .chart-box canvas{width:100%!important;height:200px!important;}
+    .chart-box:hover {
+      transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.6);
+    }
+    .chart-box h4 { display:flex; align-items:center; gap:0.5rem; color:var(--accent); margin-bottom:0.5rem; }
+    .chart-box canvas { width:100%!important; height:200px!important; }
 
   </style>
 </head>
@@ -98,7 +118,20 @@
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="brand"><i class="fas fa-medkit"></i><span>Vitra</span></div>
+    <div class="brand">
+      <!-- Same SVG logo as before -->
+      <svg viewBox="0 0 64 64">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#8ECDF1;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#8ECDF1;stop-opacity:0.7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="30" stroke="url(#grad)" stroke-width="4" fill="none"/>
+        <path d="M32 16v32M16 32h32" stroke="url(#grad)" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <span>Vitra</span>
+    </div>
     <nav class="nav-links">
       <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
       <a href="herbs.html"><i class="fas fa-seedling"></i><span>Herbs</span></a>
@@ -131,71 +164,52 @@
     <div class="content">
       <!-- Quick Metrics -->
       <div class="grid-4">
-        <div class="widget"><i class="fas fa-seedling"></i>
-          <div><h3 id="stat-id">0</h3><p>Herb IDs</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-smile-beam"></i>
-          <div><h3 id="stat-mood">0</h3><p>Mood Logs</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-utensils"></i>
-          <div><h3 id="stat-meal">0</h3><p>Meals</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-pills"></i>
-          <div><h3 id="stat-scripts">0</h3><p>Scripts</p></div>
-        </div>
+        <div class="widget"><i class="fas fa-seedling"></i><div><h3 id="stat-id">0</h3><p>Herb IDs</p></div></div>
+        <div class="widget"><i class="fas fa-smile-beam"></i><div><h3 id="stat-mood">0</h3><p>Mood Logs</p></div></div>
+        <div class="widget"><i class="fas fa-utensils"></i><div><h3 id="stat-meal">0</h3><p>Meals</p></div></div>
+        <div class="widget"><i class="fas fa-pills"></i><div><h3 id="stat-scripts">0</h3><p>Scripts</p></div></div>
       </div>
       <div class="grid-4">
-        <div class="widget"><i class="fas fa-calendar-check"></i>
-          <div><h3 id="stat-booking">0</h3><p>Bookings</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-robot"></i>
-          <div><h3 id="stat-sugg">0</h3><p>AI Actions</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-tint"></i>
-          <div><h3 id="waterIntake">6</h3><p>Glasses</p></div>
-        </div>
-        <div class="widget"><i class="fas fa-walking"></i>
-          <div><h3 id="stepsCount">0</h3><p>Steps</p></div>
-        </div>
+        <div class="widget"><i class="fas fa-calendar-check"></i><div><h3 id="stat-booking">0</h3><p>Bookings</p></div></div>
+        <div class="widget"><i class="fas fa-robot"></i><div><h3 id="stat-sugg">0</h3><p>AI Actions</p></div></div>
+        <div class="widget"><i class="fas fa-tint"></i><div><h3 id="waterIntake">6</h3><p>Glasses</p></div></div>
+        <div class="widget"><i class="fas fa-walking"></i><div><h3 id="stepsCount">0</h3><p>Steps</p></div></div>
       </div>
 
-      <!-- AI Insight -->
+      <!-- AI Insight Panel -->
       <div class="panel">
         <h3><i class="fas fa-lightbulb"></i> AI Insight of the Day</h3>
-        <p id="aiInsight">Analyzing your recent patterns…</p>
+        <p id="aiInsight">Loading recommendation…</p>
       </div>
 
-      <!-- Three Charts -->
+      <!-- Three Professional Charts -->
       <div class="grid-3">
-        <div class="chart-box">
-          <h4><i class="fas fa-chart-line"></i> Weekly Mood Trend</h4>
+        <div class="chart-box"><h4><i class="fas fa-chart-line"></i> Weekly Mood Trend</h4>
           <canvas id="moodChart"></canvas>
         </div>
-        <div class="chart-box">
-          <h4><i class="fas fa-chart-pie"></i> Nutrition Breakdown</h4>
+        <div class="chart-box"><h4><i class="fas fa-chart-pie"></i> Nutrition Breakdown</h4>
           <canvas id="nutritionChart"></canvas>
         </div>
-        <div class="chart-box">
-          <h4><i class="fas fa-chart-bar"></i> This Week’s Bookings</h4>
+        <div class="chart-box"><h4><i class="fas fa-chart-bar"></i> This Week’s Bookings</h4>
           <canvas id="bookingChart"></canvas>
         </div>
       </div>
 
-      <!-- Notifications & Actions -->
+      <!-- Recent Notifications & Quick Actions -->
       <div class="grid-2">
         <div class="panel">
           <h3><i class="fas fa-bell"></i> Recent Notifications</h3>
           <ul>
-            <li>• Mood logged 7 days in a row—keep it up!</li>
-            <li>• AI recommended a new high-protein meal plan.</li>
-            <li>• Upcoming telehealth appointment in 2 days.</li>
+            <li>• Mood logged for 7 days straight. Well done!</li>
+            <li>• AI suggested a new meal plan for you.</li>
+            <li>• Telehealth appointment in 2 days.</li>
             <li>• “Ashwagandha” added to your favorites.</li>
           </ul>
         </div>
         <div class="panel">
           <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
           <button style="margin:0.3rem;padding:0.6rem 1rem;background:var(--accent);color:var(--card);border-radius:6px;">Log Mood</button>
-          <button style="margin:0.3rem;padding:0.6rem 1rem;background:var(--accent);color:var(--card);border-radius:6px;">Scan Prescription</button>
+          <button style="margin:0.3rem;padding:0.6rem 1rem;background:var(--accent);color:var(--card);border-radius:6px;">Scan Script</button>
           <button style="margin:0.3rem;padding:0.6rem 1rem;background:var(--accent);color:var(--card);border-radius:6px;">Book Appointment</button>
           <button style="margin:0.3rem;padding:0.6rem 1rem;background:var(--accent);color:var(--card);border-radius:6px;">Add Meal</button>
         </div>
@@ -204,83 +218,64 @@
   </div>
 
   <script>
-    // Simple Storage wrapper
-    const Storage = (() => {
-      const defaults = {id:0,mood:0,meal:0,scripts:0,booking:0,sugg:0,waterIntake:6};
-      Object.keys(defaults).forEach(k => { if(localStorage.getItem(k)===null) localStorage.setItem(k,defaults[k]); });
-      const listeners = {};
-      window.addEventListener('storage', e => {
-        if(listeners[e.key]) listeners[e.key].forEach(fn=>fn(e.newValue));
-      });
-      return {
-        get(k){ return JSON.parse(localStorage.getItem(k)); },
-        set(k,v){ localStorage.setItem(k,JSON.stringify(v)); (listeners[k]||[]).forEach(fn=>fn(v)); },
-        on(k,fn){ listeners[k]=listeners[k]||[]; listeners[k].push(fn); }
-      };
-    })();
+    // Sidebar toggle
+    document.getElementById('toggleSidebarBtn').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    document.querySelector('.toggle-btn i').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
 
-    // Sidebar
-    document.getElementById('toggleSidebarBtn').onclick = ()=>sidebar.classList.toggle('collapsed');
-    document.querySelector('.toggle-btn i').onclick = ()=>sidebar.classList.toggle('collapsed');
-    const sidebar = document.getElementById('sidebar');
-
-    // Theme
+    // Theme toggle
     const themeBtn = document.getElementById('themeToggle');
-    themeBtn.onclick = ()=>{
+    themeBtn.onclick = () => {
       document.documentElement.classList.toggle('light');
-      themeBtn.classList.toggle('fa-sun'); themeBtn.classList.toggle('fa-moon');
-      localStorage.setItem('light', document.documentElement.classList.contains('light'));
+      themeBtn.classList.toggle('fa-sun');
+      themeBtn.classList.toggle('fa-moon');
+      localStorage.setItem('lightMode', document.documentElement.classList.contains('light'));
     };
-    if(localStorage.getItem('light')==='true') themeBtn.click();
+    if (localStorage.getItem('lightMode') === 'true') themeBtn.click();
 
-    // Profile link
-    document.querySelector('.header-right .fa-user-circle').onclick = ()=>location.href='profile.html';
-
-    // Dynamic stats
-    ['id','mood','meal','scripts','booking','sugg','waterIntake'].forEach(k=>{
-      const el = document.getElementById(`stat-${k}`) || document.getElementById(k);
-      if(el) el.textContent = Storage.get(k);
-      Storage.on(k, v=>{ if(el) el.textContent = v; });
+    // Initialize stats
+    ['id','mood','meal','scripts','booking','sugg'].forEach(key => {
+      if (!localStorage.getItem(key)) localStorage.setItem(key,'0');
+      document.getElementById(`stat-${key}`).textContent = localStorage.getItem(key);
     });
-    // steps
-    const stepsEl = document.getElementById('stepsCount');
-    function updateSteps(){ stepsEl.textContent = Math.floor(Math.random()*10000)+1000; }
-    updateSteps(); setInterval(updateSteps, 30000);
+    document.getElementById('stepsCount').textContent = Math.floor(Math.random()*10000)+1000;
+    document.getElementById('waterIntake').textContent = localStorage.getItem('waterIntake')||6;
 
-    // AI Insight
+    // AI Insight mock
     document.getElementById('aiInsight').textContent =
-      "Tonight: 10min guided meditation to improve sleep quality.";
+      "Based on your sleep data, try a 10-minute guided meditation tonight.";
 
-    // Charts
-    const charts = {};
+    // Chart helpers
     function makeLine(id,data){
-      const ctx = document.getElementById(id);
-      charts[id] = new Chart(ctx,{type:'line',data:{
-        labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-        datasets:[{data,borderColor:'var(--accent)',backgroundColor:'rgba(142,205,241,0.2)',fill:true,tension:0.3}]
-      },options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+      new Chart(document.getElementById(id),{
+        type:'line', data:{
+          labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+          datasets:[{data,borderColor:'var(--accent)',backgroundColor:'rgba(142,205,241,0.2)',fill:true,tension:0.3}]
+        }, options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+      });
     }
     function makePie(id,data){
-      const ctx = document.getElementById(id);
-      charts[id] = new Chart(ctx,{type:'doughnut',data:{
-        labels:['Used','Remaining'],datasets:[{data,backgroundColor:['var(--accent)',var(--card)],cutout:'60%'}]
-      },options:{plugins:{legend:{position:'bottom'}}}});
+      new Chart(document.getElementById(id),{
+        type:'doughnut', data:{
+          labels:['Used','Remaining'],
+          datasets:[{data,backgroundColor:['var(--accent)',var(--card)],cutout:'60%'}]
+        }, options:{plugins:{legend:{position:'bottom'}}}
+      });
     }
     function makeBar(id,data){
-      const ctx = document.getElementById(id);
-      charts[id] = new Chart(ctx,{type:'bar',data:{
-        labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],datasets:[{data,backgroundColor:'var(--accent)'}]
-      },options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+      new Chart(document.getElementById(id),{
+        type:'bar', data:{
+          labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+          datasets:[{data,backgroundColor:'var(--accent)'}]
+        }, options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+      });
     }
 
-    // initial chart data from storage or defaults
+    // Render charts
     makeLine('moodChart',[3,4,2,5,3,4,3]);
     makePie('nutritionChart',[1500,700]);
     makeBar('bookingChart',[1,2,3,2,1,2,1]);
-
-    // update charts on data change
-    Storage.on('mood',(v)=>charts['moodChart'].data.datasets[0].data.push(v) && charts['moodChart'].update());
-    // similarly you can hook nutrition or booking to dynamic data updates
   </script>
 </body>
 </html>
