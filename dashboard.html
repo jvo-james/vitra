@@ -1,111 +1,147 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Vitra Dashboard</title>
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* RESET & BASE */
-    * {margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
-    body {display:flex;height:100vh;overflow:hidden;background:#0D1117;color:#E0E0E0;transition:background .3s,color .3s;}
-    a {color:inherit;text-decoration:none;}
-    button {cursor:pointer;border:none;background:none;color:inherit;}
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+    body { display:flex; min-height:100vh; background:#0D1117; color:#E0E0E0; transition:background .3s,color .3s; }
+    a { color:inherit; text-decoration:none; }
+    button { cursor:pointer; border:none; background:none; color:inherit; }
+    h3, h4 { margin-bottom:0.5rem; }
 
-    /* ACCENT */
-    :root {--accent-light:#8ECDF1;--accent-dark:#5DAEDC;}
+    /* ACCENTS */
+    :root {
+      --accent-light: #8ECDF1;
+      --accent-dark:  #5DAEDC;
+      --card-bg:     #1E2126;
+      --card-hover:  rgba(0,0,0,0.6);
+      --text-muted:  rgba(224,224,224,0.6);
+    }
+
+    /* DARK/LIGHT MODE */
+    html.dark body { background:#0D1117; color:#E0E0E0; }
+    html.dark .card, html.dark .chart-box { background:var(--card-bg); }
+    html.dark header { background:rgba(13,17,23,0.85); }
+    html.dark #sidebar { background:#161B22; }
+    html.light body { background:#F5F5F5; color:#222; }
+    html.light .card, html.light .chart-box { background:#fff; color:#222; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+    html.light header { background:#fff; color:#222; }
+    html.light #sidebar { background:#fff; }
 
     /* SIDEBAR */
     #sidebar {
-      width:240px; background:#161B22; display:flex;flex-direction:column;transition:width .3s;
+      width:240px; flex-shrink:0; display:flex; flex-direction:column; transition:width .3s;
     }
-    #sidebar.collapsed {width:64px;}
+    #sidebar.collapsed { width:64px; }
     .brand {
-      display:flex;align-items:center;gap:0.75rem;padding:1.5rem;font-size:1.3rem;font-weight:700;color:var(--accent-light);
+      display:flex; align-items:center; gap:0.75rem; padding:1.5rem; font-size:1.3rem; font-weight:700; color:var(--accent-light);
     }
-    .brand i {font-size:1.6rem;}
-    #sidebar.collapsed .brand span {display:none;}
-    .nav-links {flex:1;}
+    .brand i { font-size:1.6rem; }
+    #sidebar.collapsed .brand span { display:none; }
+    .nav-links { flex:1; }
     .nav-links a {
-      display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;transition:background .2s;
+      display:flex; align-items:center; gap:1rem; padding:0.9rem 1.2rem; transition:background .2s;
     }
-    .nav-links a:hover {background:rgba(142,205,241,0.1);}
-    #sidebar.collapsed .nav-links a span {display:none;}
-    .nav-links a i {width:24px;text-align:center;font-size:1.2rem;color:var(--accent-light);}
+    .nav-links a:hover, .nav-links a.active { background:rgba(142,205,241,0.1); }
+    html.light .nav-links a:hover, html.light .nav-links a.active { background:rgba(142,205,241,0.2); }
+    #sidebar.collapsed .nav-links a span { display:none; }
+    .nav-links a i { width:24px; text-align:center; font-size:1.2rem; color:var(--accent-light); }
+
     .toggle-sidebar {
       padding:1rem; text-align:center; cursor:pointer; border-top:1px solid #29303A;
     }
-    .toggle-sidebar i {font-size:1.2rem;color:var(--accent-light);}
+    .toggle-sidebar i { font-size:1.2rem; color:var(--accent-light); }
 
     /* MAIN */
-    #main {flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    #main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
     header {
-      display:flex;align-items:center;justify-content:space-between;
-      padding:1rem 2rem;background:rgba(13,17,23,0.85);backdrop-filter:blur(6px);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem; backdrop-filter:blur(6px); position:sticky; top:0; z-index:10;
     }
-    .header-left {display:flex;align-items:center;gap:1rem;}
-    .header-left i {font-size:1.4rem;cursor:pointer;}
-    .greeting h1 {font-size:1.9rem;display:flex;align-items:center;gap:0.5rem;}
-    .greeting p {opacity:0.75;}
-    .header-right i {margin-left:1rem;font-size:1.4rem;cursor:pointer;}
+    .header-left { display:flex; align-items:center; gap:1rem; }
+    #toggleSidebarBtn { font-size:1.4rem; cursor:pointer; }
+    .greeting h1 { font-size:1.9rem; display:flex; align-items:center; gap:0.5rem; }
+    .greeting p { opacity:0.75; }
+    .header-right { display:flex; align-items:center; gap:1rem; position:relative; }
+    .header-right i { font-size:1.4rem; cursor:pointer; }
+    /* hide hamburger on desktop */
+    @media(min-width:768px) {
+      #toggleSidebarBtn { display:none; }
+    }
+
+    /* SETTINGS DROPDOWN */
+    #profileMenu {
+      position:absolute; top:100%; right:0; background:var(--card-bg); border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2); overflow:hidden; display:none;
+    }
+    #profileMenu a {
+      display:block; padding:0.8rem 1rem; font-size:0.9rem; color:inherit; transition:background .2s;
+    }
+    #profileMenu a:hover { background:rgba(142,205,241,0.1); }
 
     /* CONTENT */
-    .content {padding:1rem 2rem;overflow-y:auto;flex:1;}
+    .content { padding:1rem 2rem; overflow-y:auto; flex:1; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; margin-bottom:1.5rem; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
 
-    /* GRIDS */
-    .grid-3 {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:1.5rem;}
-    .grid-2 {display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
-
-    /* CARD */
     .card {
-      background:#1E2126;border-radius:12px;padding:1rem;
+      background:var(--card-bg); border-radius:12px; padding:1rem;
       transition:transform .2s,box-shadow .2s;
     }
-    .card:hover {transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.6);}
-    .card-header {display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;}
-    .card-header i {font-size:1.5rem;color:var(--accent-light);}
+    .card:hover { transform:translateY(-4px); box-shadow:0 8px 20px var(--card-hover); }
+    .card-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; }
+    .card-header i { font-size:1.5rem; color:var(--accent-light); }
 
-    /* CHARTS */
-    .chart-box {background:#1E2126;border-radius:12px;padding:1rem;}
-    .chart-box canvas {width:100%!important;height:180px!important;}
+    .chart-box { background:var(--card-bg); border-radius:12px; padding:1rem; }
+    .chart-box canvas { width:100%!important; height:200px!important; }
 
-    /* WIDGETS */
-    #aiSearch {display:flex;gap:0.5rem;margin-bottom:1rem;}
-    #aiSearch input {flex:1;padding:0.6rem;border-radius:6px;background:#0D1117;border:1px solid #29303A;color:#E0E0E0;}
-    #aiSearch button {padding:0.6rem 1rem;border-radius:6px;background:var(--accent-light);color:#0D1117;}
-    .mood-slider {display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;}
-    .mood-slider span {font-size:1.4rem;}
-    .meal-summary li {display:flex;justify-content:space-between;font-size:0.9rem;opacity:0.8;}
-    .appointments li {display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.9rem;}
-    .appointments i {color:var(--accent-light);}
+    .progress-container { margin:1rem 0; }
+    .progress-container label { font-size:0.9rem; margin-bottom:0.3rem; display:block; }
+    .progress-bar {
+      width:100%; height:12px; background:#29303A; border-radius:6px; overflow:hidden;
+    }
+    .progress-bar > div {
+      height:100%; background:var(--accent-light); width:0%; transition:width .4s;
+    }
 
-    /* LIGHT MODE */
-    html.light body {background:#F5F5F5;color:#222;}
-    html.light #sidebar {background:#fff;}
-    html.light .card, html.light .chart-box {background:#fff;color:#222;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
-    html.light header {background:#fff;color:#222;}
-    html.light .nav-links a:hover {background:rgba(142,205,241,0.2);}
+    .calendar {
+      width:100%; border-collapse:collapse; margin-top:0.5rem;
+      background:var(--card-bg); border-radius:8px; overflow:hidden;
+    }
+    .calendar th, .calendar td {
+      width:14.28%; padding:0.5rem; text-align:center; font-size:0.85rem; color:inherit;
+    }
+    .calendar th { background:rgba(142,205,241,0.1); }
+    .calendar td:hover { background:rgba(142,205,241,0.1); cursor:pointer; }
+
+    .appointments, .doses {
+      list-style:none; margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted);
+    }
+    .appointments li, .doses li { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; }
+    .appointments i, .doses i { color:var(--accent-light); }
   </style>
 </head>
 <body>
-
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="brand"><i class="fas fa-medkit"></i><span>Vitra</span></div>
-    <nav class="nav-links">
-      <a href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <nav class="nav-links" role="navigation">
+      <a href="#" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
       <a href="#"><i class="fas fa-seedling"></i><span>Herbs</span></a>
       <a href="#"><i class="fas fa-brain"></i><span>Mental</span></a>
       <a href="#"><i class="fas fa-utensils"></i><span>Diet</span></a>
       <a href="#"><i class="fas fa-pills"></i><span>E-Pharmacy</span></a>
       <a href="#"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
-      <a href="#"><i class="fas fa-user-circle"></i><span>Profile</span></a>
+      <a href="profile.html"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </nav>
     <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
   </aside>
@@ -122,7 +158,12 @@
       </div>
       <div class="header-right">
         <i class="fas fa-bell"></i>
-        <i class="fas fa-user-circle"></i>
+        <i id="profileIcon" class="fas fa-user-circle"></i>
+        <div id="profileMenu">
+          <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+          <a href="#"><i class="fas fa-cog"></i> Settings</a>
+          <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
         <i id="themeToggle" class="fas fa-moon"></i>
       </div>
     </header>
@@ -132,11 +173,11 @@
       <div class="grid-3">
         <div class="card">
           <div class="card-header"><i class="fas fa-leaf"></i><h3>Herb of the Day</h3></div>
-          <p><strong>Ginkgo Biloba</strong><br>Memory & Circulation</p>
+          <p><strong>Ginkgo Biloba</strong><br><small class="text-muted">Memory & Circulation</small></p>
         </div>
         <div class="card">
           <div class="card-header"><i class="fas fa-smile-beam"></i><h3>Mood</h3></div>
-          <p><strong>Happy</strong> — Try breathing</p>
+          <p><strong>Happy</strong> — Try deep breathing</p>
         </div>
         <div class="card">
           <div class="card-header"><i class="fas fa-pills"></i><h3>Medications</h3></div>
@@ -144,200 +185,145 @@
         </div>
       </div>
 
-      <!-- Charts -->
+      <!-- Charts (3 total) -->
       <div class="grid-2">
         <div class="chart-box">
-          <h4><i class="fas fa-utensils"></i> Nutrition</h4>
-          <canvas id="nutritionChart"></canvas>
+          <h4><i class="fas fa-utensils"></i> Nutrition Breakdown</h4>
+          <canvas id="chartNutrition"></canvas>
         </div>
         <div class="chart-box">
           <h4><i class="fas fa-heartbeat"></i> Wellness Score</h4>
-          <canvas id="wellnessChart"></canvas>
+          <canvas id="chartWellness"></canvas>
         </div>
       </div>
+      <div class="chart-box" style="margin-bottom:1.5rem;">
+        <h4><i class="fas fa-walking"></i> Activity Trend</h4>
+        <canvas id="chartActivity"></canvas>
+      </div>
 
-      <!-- Interactive Row -->
+      <!-- Progress Bars -->
+      <div class="card progress-container">
+        <label for="hydration">Hydration Goal</label>
+        <div class="progress-bar"><div id="hydrationBar" style="width: 60%;"></div></div>
+        <label for="exercise" style="margin-top:1rem;">Exercise Goal</label>
+        <div class="progress-bar"><div id="exerciseBar" style="width: 45%;"></div></div>
+      </div>
+
+      <!-- Calendar + Appointments & Doses -->
       <div class="grid-2">
-        <!-- AI Search -->
         <div class="card">
-          <div class="card-header"><i class="fas fa-robot"></i><h3>Herb AI Search</h3></div>
-          <div id="aiSearch">
-            <input id="herbQuery" placeholder="Ask about a herb…"/>
-            <button id="askAI"><i class="fas fa-question-circle"></i> Ask</button>
-          </div>
-          <div id="aiResponse" style="opacity:0.8;font-size:0.9rem;"></div>
+          <h4><i class="fas fa-calendar-alt"></i> May 2025 Calendar</h4>
+          <table class="calendar">
+            <thead>
+              <tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr>
+            </thead>
+            <tbody>
+              <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+              <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
+              <tr><td>13</td><td>14</td><td>15</td><td><span style="background:var(--accent-light);border-radius:50%;padding:0.2rem 0.5rem;">16</span></td><td>17</td><td>18</td><td>19</td></tr>
+              <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+              <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
+            </tbody>
+          </table>
         </div>
-        <!-- Mood & Meal -->
-        <div class="card">
-          <div class="card-header"><i class="fas fa-smile"></i><h3>Daily Mood & Meal</h3></div>
-          <div class="mood-slider">
-            <span>😞</span><input id="moodSlider" type="range" min="1" max="5" value="3"/><span>😁</span>
+        <div>
+          <div class="card">
+            <h4><i class="fas fa-user-md"></i> Upcoming Appointments</h4>
+            <ul class="appointments">
+              <li><i class="fas fa-user-md"></i> Dr. Taylor — May 18, 11:00 AM</li>
+              <li><i class="fas fa-video"></i> Telehealth — May 20, 10:00 AM</li>
+            </ul>
           </div>
-          <p><strong>Mood:</strong> <span id="moodValue">3</span>/5</p>
-          <h4><i class="fas fa-utensils"></i> Meal Plan</h4>
-          <ul class="meal-summary">
-            <li>Breakfast <span>450 kcal</span></li>
-            <li>Lunch <span>600 kcal</span></li>
-            <li>Dinner <span>490 kcal</span></li>
-          </ul>
+          <div class="card" style="margin-top:1rem;">
+            <h4><i class="fas fa-syringe"></i> Upcoming Doses</h4>
+            <ul class="doses">
+              <li><i class="fas fa-pill"></i> Vitamin D — May 17, 8:00 AM</li>
+              <li><i class="fas fa-capsules"></i> Omega-3 — May 17, 8:00 PM</li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <!-- Additional Features -->
+      <!-- Extra Content -->
       <div class="grid-3">
         <div class="card">
-          <div class="card-header"><i class="fas fa-tint"></i><h3>Water Intake</h3></div>
-          <input id="waterInput" type="number" min="0" max="10" value="6" style="width:60px;padding:0.4rem;border-radius:6px;border:1px solid #29303A;background:#0D1117;color:#E0E0E0;"/>
-          <span>glasses</span>
-        </div>
-        <div class="card">
-          <div class="card-header"><i class="fas fa-walking"></i><h3>Step Counter</h3></div>
-          <p><strong><span id="stepsCount">8423</span></strong> steps today</p>
-        </div>
-        <div class="card">
-          <div class="card-header"><i class="fas fa-bed"></i><h3>Sleep Tracker</h3></div>
-          <p><strong>7h 45m</strong> last night</p>
-        </div>
-      </div>
-
-      <!-- Appointments & Mini Chart -->
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header"><i class="fas fa-calendar-alt"></i><h3>Appointments</h3></div>
-          <ul class="appointments">
-            <li><i class="fas fa-user-md"></i> Dr. Taylor — Apr 18, 2:00 PM</li>
-            <li><i class="fas fa-video"></i> Telehealth — Apr 20, 10:00 AM</li>
+          <h4><i class="fas fa-newspaper"></i> Health News</h4>
+          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
+            <li>New study on turmeric benefits</li>
+            <li>5 ways to improve sleep quality</li>
+            <li>Guide: Mindful breathing exercises</li>
           </ul>
         </div>
-        <div class="chart-box">
-          <h4><i class="fas fa-chart-line"></i> Weekly Trend</h4>
-          <canvas id="miniChart"></canvas>
+        <div class="card">
+          <h4><i class="fas fa-lightbulb"></i> Quick Tips</h4>
+          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
+            <li>Drink a glass of water first thing.</li>
+            <li>Stand up every hour to stretch.</li>
+            <li>Spend 5 minutes in meditation.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4><i class="fas fa-heart"></i> Favorites</h4>
+          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
+            <li>Ginger Tea</li>
+            <li>Evening Walk</li>
+            <li>Reading before bed</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
-<script>
-  // Sidebar toggle
-  document.getElementById("toggleSidebarBtn").onclick = () => {
-    document.getElementById("sidebar").classList.toggle("collapsed");
-  };
-
-  // Theme toggle
-  document.getElementById("themeToggle").onclick = () => {
-    document.documentElement.classList.toggle("light");
-    const icon = document.getElementById("themeToggle");
-    icon.classList.toggle("fa-moon");
-    icon.classList.toggle("fa-sun");
-  };
-
-  // Mood slider update
-  const moodSlider = document.getElementById("moodSlider");
-  const moodValue = document.getElementById("moodValue");
-  moodSlider.addEventListener("input", () => {
-    moodValue.textContent = moodSlider.value;
-  });
-
-  // AI Search (placeholder logic)
-  document.getElementById("askAI").onclick = () => {
-    const query = document.getElementById("herbQuery").value.trim();
-    const responseBox = document.getElementById("aiResponse");
-    if (!query) {
-      responseBox.innerText = "Please enter a herb to search.";
-    } else {
-      // Simulate a response (replace this with real backend integration)
-      responseBox.innerText = `Looking up information for "${query}"...`;
-      // You could connect this to an API like ChatGPT, or a herb database.
-    }
-  };
-
-  // Example Chart.js initialization
-  const nutritionChart = new Chart(document.getElementById("nutritionChart"), {
-    type: 'doughnut',
-    data: {
-      labels: ['Carbs', 'Proteins', 'Fats'],
-      datasets: [{
-        data: [50, 30, 20],
-        backgroundColor: ['#8ECDF1', '#5DAEDC', '#3E8ED0']
-      }]
-    }
-  });
-
-  const wellnessChart = new Chart(document.getElementById("wellnessChart"), {
-    type: 'bar',
-    data: {
-      labels: ['Sleep', 'Mood', 'Energy'],
-      datasets: [{
-        label: 'Score',
-        data: [8, 4, 6],
-        backgroundColor: '#8ECDF1'
-      }]
-    }
-  });
-</script>
 
   <script>
     // Sidebar collapse
     const sidebar = document.getElementById('sidebar'),
-          toggle = document.querySelector('.toggle-sidebar'),
-          toggleBtn = document.getElementById('toggleSidebarBtn');
-    function collapse(){ sidebar.classList.toggle('collapsed'); }
-    toggle.onclick = collapse;
-    toggleBtn.onclick = collapse;
+          toggleBtn = document.querySelector('.toggle-sidebar');
+    toggleBtn.onclick = () => sidebar.classList.toggle('collapsed');
 
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
-    themeToggle.onclick = ()=>{
+    themeToggle.onclick = () => {
       document.documentElement.classList.toggle('light');
       themeToggle.classList.toggle('fa-sun');
       themeToggle.classList.toggle('fa-moon');
     };
 
-    // Mood slider
-    const ms = document.getElementById('moodSlider'),
-          mv = document.getElementById('moodValue');
-    ms.oninput = ()=> mv.textContent = ms.value;
-
-    // Herb AI mock
-    document.getElementById('askAI').onclick = ()=>{
-      const q= document.getElementById('herbQuery').value.toLowerCase(), r=document.getElementById('aiResponse');
-      if(!q) return r.textContent='Please ask something.';
-      r.textContent = q.includes('turmeric')
-        ? 'Turmeric (Curcuma longa) reduces inflammation and supports joint health.'
-        : q.includes('gingko')
-        ? 'Ginkgo Biloba improves blood flow and cognitive function.'
-        : 'Sorry, not sure about that herb.';
-    };
-
-    // Charts
-    new Chart(document.getElementById('nutritionChart'), {
-      type:'doughnut', data:{
-        labels:['Consumed','Left'], datasets:[{
-          data:[1540,660],
-          backgroundColor:['var(--accent-light)','#29303A'],
-          cutout:'70%'
-        }]
+    // Profile dropdown
+    const profileIcon = document.getElementById('profileIcon'),
+          profileMenu = document.getElementById('profileMenu');
+    profileIcon.onclick = () => profileMenu.style.display =
+      profileMenu.style.display === 'block' ? 'none' : 'block';
+    document.addEventListener('click', e => {
+      if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
+        profileMenu.style.display = 'none';
       }
     });
-    new Chart(document.getElementById('wellnessChart'), {
-      type:'line', data:{
-        labels:['S','M','T','W','T','F','S'], datasets:[{
-          data:[70,75,72,78,74,80,76],
-          borderColor:'var(--accent-light)', backgroundColor:'rgba(142,205,241,0.2)',
-          tension:0.4, fill:true, pointRadius:3, pointBackgroundColor:'var(--accent-light)'
-        }]
-      }, options:{scales:{y:{display:false}},plugins:{legend:{display:false}}}
-    });
-    new Chart(document.getElementById('miniChart'), {
-      type:'line', data:{
-        labels:['S','M','T','W','T','F','S'], datasets:[{
-          data:[75,73,77,74,79,76,78],
-          borderColor:'var(--accent-light)', tension:0.4, pointRadius:0
-        }]
-      }, options:{scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}
-    });
 
-    // Random steps & sleep (demo)
-    document.getElementById('stepsCount').textContent = Math.floor(Math.random()*10000)+2000;
+    // Charts initialization
+    new Chart(document.getElementById('chartNutrition'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Carbs', 'Protein', 'Fat'],
+        datasets: [{ data:[45,30,25], backgroundColor:['var(--accent-light)','var(--accent-dark)','rgba(142,205,241,0.5)'] }]
+      },
+      options: { cutout:'70%' }
+    });
+    new Chart(document.getElementById('chartWellness'), {
+      type: 'line',
+      data: {
+        labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets:[{ data:[72,75,78,80,77,82,85], borderColor:'var(--accent-light)', fill:true, tension:0.4 }]
+      },
+      options: { plugins:{legend:{display:false}} }
+    });
+    new Chart(document.getElementById('chartActivity'), {
+      type: 'bar',
+      data: {
+        labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets:[{ label:'Steps (k)', data:[5,6,7,4,8,9,10], backgroundColor:'var(--accent-light)' }]
+      },
+      options:{ scales:{ y:{ beginAtZero:true } } }
+    });
   </script>
 </body>
 </html>
