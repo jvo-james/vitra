@@ -16,7 +16,7 @@
     body { display:flex; min-height:100vh; background:#0D1117; color:#E0E0E0; transition:background .3s,color .3s; }
     a { color:inherit; text-decoration:none; }
     button { cursor:pointer; border:none; background:none; color:inherit; }
-    h3, h4 { margin-bottom:0.5rem; }
+    h3,h4 { margin-bottom:0.5rem; }
 
     /* ACCENTS */
     :root {
@@ -29,118 +29,112 @@
 
     /* DARK/LIGHT MODE */
     html.dark body { background:#0D1117; color:#E0E0E0; }
-    html.dark .card, html.dark .chart-box { background:var(--card-bg); }
-    html.dark header { background:rgba(13,17,23,0.85); }
-    html.dark #sidebar { background:#161B22; }
+    html.dark .card, html.dark .chart-box, html.dark .dropdown, html.dark .hotbar { background:var(--card-bg); }
+    html.dark header, html.dark #sidebar { background:rgba(13,17,23,0.95); }
     html.light body { background:#F5F5F5; color:#222; }
-    html.light .card, html.light .chart-box { background:#fff; color:#222; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
-    html.light header { background:#fff; color:#222; }
-    html.light #sidebar { background:#fff; }
+    html.light .card, html.light .chart-box, html.light .dropdown, html.light .hotbar { background:#fff; color:#222; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    html.light header, html.light #sidebar { background:#fff; color:#222; }
 
-    /* SIDEBAR */
+    /* STICKY SIDEBAR & HEADER */
     #sidebar {
-      width:240px; flex-shrink:0; display:flex; flex-direction:column; transition:width .3s;
+      width:240px; flex-shrink:0; display:flex; flex-direction:column;
+      position:sticky; top:0; height:100vh; transition:width .3s;
     }
     #sidebar.collapsed { width:64px; }
-    .brand {
-      display:flex; align-items:center; gap:0.75rem; padding:1.5rem; font-size:1.3rem; font-weight:700; color:var(--accent-light);
+    header {
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem; backdrop-filter:blur(6px);
     }
+
+    /* SIDEBAR CONTENT */
+    .brand { display:flex; align-items:center; gap:0.75rem; padding:1.5rem; font-size:1.3rem; font-weight:700; color:var(--accent-light); }
     .brand i { font-size:1.6rem; }
     #sidebar.collapsed .brand span { display:none; }
-    .nav-links { flex:1; }
-    .nav-links a {
-      display:flex; align-items:center; gap:1rem; padding:0.9rem 1.2rem; transition:background .2s;
-    }
+    .nav-links { flex:1; overflow:auto; }
+    .nav-links a { display:flex; align-items:center; gap:1rem; padding:0.9rem 1.2rem; transition:background .2s; }
     .nav-links a:hover, .nav-links a.active { background:rgba(142,205,241,0.1); }
     html.light .nav-links a:hover, html.light .nav-links a.active { background:rgba(142,205,241,0.2); }
     #sidebar.collapsed .nav-links a span { display:none; }
     .nav-links a i { width:24px; text-align:center; font-size:1.2rem; color:var(--accent-light); }
 
-    .toggle-sidebar {
-      padding:1rem; text-align:center; cursor:pointer; border-top:1px solid #29303A;
-    }
+    .toggle-sidebar { padding:1rem; text-align:center; cursor:pointer; border-top:1px solid #29303A; }
     .toggle-sidebar i { font-size:1.2rem; color:var(--accent-light); }
 
-    /* MAIN */
+    /* MAIN CONTENT */
     #main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-    header {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:1rem 2rem; backdrop-filter:blur(6px); position:sticky; top:0; z-index:10;
-    }
-    .header-left { display:flex; align-items:center; gap:1rem; }
-    #toggleSidebarBtn { font-size:1.4rem; cursor:pointer; }
-    .greeting h1 { font-size:1.9rem; display:flex; align-items:center; gap:0.5rem; }
-    .greeting p { opacity:0.75; }
-    .header-right { display:flex; align-items:center; gap:1rem; position:relative; }
-    .header-right i { font-size:1.4rem; cursor:pointer; }
-    /* hide hamburger on desktop */
-    @media(min-width:768px) {
-      #toggleSidebarBtn { display:none; }
-    }
-
-    /* SETTINGS DROPDOWN */
-    #profileMenu {
-      position:absolute; top:100%; right:0; background:var(--card-bg); border-radius:8px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.2); overflow:hidden; display:none;
-    }
-    #profileMenu a {
-      display:block; padding:0.8rem 1rem; font-size:0.9rem; color:inherit; transition:background .2s;
-    }
-    #profileMenu a:hover { background:rgba(142,205,241,0.1); }
-
-    /* CONTENT */
     .content { padding:1rem 2rem; overflow-y:auto; flex:1; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; margin-bottom:1.5rem; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
 
-    .card {
-      background:var(--card-bg); border-radius:12px; padding:1rem;
-      transition:transform .2s,box-shadow .2s;
-    }
+    /* GRID LAYOUTS */
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; margin-bottom:1.5rem; }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; margin-bottom:1.5rem; }
+
+    /* CARDS */
+    .card { background:var(--card-bg); border-radius:12px; padding:1rem; transition:transform .2s,box-shadow .2s; }
     .card:hover { transform:translateY(-4px); box-shadow:0 8px 20px var(--card-hover); }
     .card-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; }
     .card-header i { font-size:1.5rem; color:var(--accent-light); }
 
+    /* CHART BOX */
     .chart-box { background:var(--card-bg); border-radius:12px; padding:1rem; }
     .chart-box canvas { width:100%!important; height:200px!important; }
 
+    /* NOTIFICATIONS DROPDOWN */
+    .dropdown { position:absolute; top:100%; right:0; width:280px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); overflow:hidden; display:none; z-index:20; }
+    .dropdown header { background:var(--accent-light); padding:0.5rem 1rem; color:#0D1117; font-weight:600; }
+    .dropdown .item { display:flex; justify-content:space-between; padding:0.6rem 1rem; font-size:0.9rem; }
+    .dropdown .item + .item { border-top:1px solid #29303A; }
+    .dropdown .actions { display:flex; justify-content:space-between; padding:0.5rem 1rem; background:rgba(224,224,224,0.05); }
+
+    /* HOTBAR */
+    .hotbar { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:12px; }
+    .hotbar button { width:52px; height:52px; border-radius:50%; background:var(--accent-light); color:#0D1117; font-size:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+
+    /* PROGRESS */
     .progress-container { margin:1rem 0; }
     .progress-container label { font-size:0.9rem; margin-bottom:0.3rem; display:block; }
-    .progress-bar {
-      width:100%; height:12px; background:#29303A; border-radius:6px; overflow:hidden;
-    }
-    .progress-bar > div {
-      height:100%; background:var(--accent-light); width:0%; transition:width .4s;
-    }
+    .progress-bar { width:100%; height:12px; background:#29303A; border-radius:6px; overflow:hidden; }
+    .progress-bar > div { height:100%; background:var(--accent-light); width:0%; transition:width .4s; }
 
-    .calendar {
-      width:100%; border-collapse:collapse; margin-top:0.5rem;
-      background:var(--card-bg); border-radius:8px; overflow:hidden;
-    }
-    .calendar th, .calendar td {
-      width:14.28%; padding:0.5rem; text-align:center; font-size:0.85rem; color:inherit;
-    }
+    /* CALENDAR */
+    .calendar { width:100%; border-collapse:collapse; margin-top:0.5rem; border-radius:8px; overflow:hidden; }
+    .calendar th, .calendar td { width:14.28%; padding:0.5rem; text-align:center; font-size:0.85rem; }
     .calendar th { background:rgba(142,205,241,0.1); }
     .calendar td:hover { background:rgba(142,205,241,0.1); cursor:pointer; }
 
-    .appointments, .doses {
-      list-style:none; margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted);
+    /* WIDGET GRID: draggable */
+    #widgetGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; }
+    .widget { background:var(--card-bg); border-radius:12px; padding:1rem; cursor:grab; }
+
+    /* CHATBOT */
+    #chatbot { position:fixed; bottom:20px; left:20px; width:300px; max-height:400px; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none; flex-direction:column; }
+    #chatbot header { background:var(--accent-light); padding:0.5rem; color:#0D1117; font-weight:600; }
+    #chatbot .messages { flex:1; padding:0.5rem; overflow-y:auto; background:var(--card-bg); }
+    #chatbot input { border:none; padding:0.5rem; width:100%; box-sizing:border-box; }
+
+    /* SOS BUTTON */
+    #sos { position:fixed; bottom:100px; right:20px; width:48px; height:48px; border-radius:50%; background:#e74c3c; color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:20; }
+
+    /* RESPONSIVE OVERRIDES */
+    @media(max-width:767px) {
+      .hotbar { bottom:80px; right:10px; }
+      #sidebar { position:fixed; left:-240px; transition:left .3s; }
+      #sidebar.show { left:0; }
+      #toggleSidebarBtn { display:block; }
     }
-    .appointments li, .doses li { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; }
-    .appointments i, .doses i { color:var(--accent-light); }
   </style>
 </head>
 <body>
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="brand"><i class="fas fa-medkit"></i><span>Vitra</span></div>
-    <nav class="nav-links" role="navigation">
-      <a href="#" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-      <a href="#"><i class="fas fa-seedling"></i><span>Herbs</span></a>
-      <a href="#"><i class="fas fa-brain"></i><span>Mental</span></a>
-      <a href="#"><i class="fas fa-utensils"></i><span>Diet</span></a>
-      <a href="#"><i class="fas fa-pills"></i><span>E-Pharmacy</span></a>
-      <a href="#"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
+    <nav class="nav-links">
+      <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="herbs.html"><i class="fas fa-seedling"></i><span>Herbs</span></a>
+      <a href="mental.html"><i class="fas fa-brain"></i><span>Mental</span></a>
+      <a href="diet.html"><i class="fas fa-utensils"></i><span>Diet</span></a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>E-Pharmacy</span></a>
+      <a href="booking.html"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
       <a href="profile.html"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </nav>
     <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
@@ -157,11 +151,18 @@
         </div>
       </div>
       <div class="header-right">
-        <i class="fas fa-bell"></i>
+        <i id="notifIcon" class="fas fa-bell"></i>
+        <div id="notifDropdown" class="dropdown">
+          <header>Notifications <button id="clearNotif" style="float:right;font-size:0.9rem;">Clear All</button></header>
+          <div class="item">Lab result: Cholesterol <button class="snooze" data-id="1">Snooze</button></div>
+          <div class="item">Appointment tomorrow <button class="snooze" data-id="2">Snooze</button></div>
+          <div class="item">Refill due: Metformin <button class="snooze" data-id="3">Snooze</button></div>
+          <div class="actions"><button id="viewAll">View All</button></div>
+        </div>
         <i id="profileIcon" class="fas fa-user-circle"></i>
-        <div id="profileMenu">
+        <div id="profileMenu" class="dropdown">
           <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
-          <a href="#"><i class="fas fa-cog"></i> Settings</a>
+          <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
           <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
         <i id="themeToggle" class="fas fa-moon"></i>
@@ -169,24 +170,36 @@
     </header>
 
     <div class="content">
-      <!-- Top Stats -->
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-header"><i class="fas fa-leaf"></i><h3>Herb of the Day</h3></div>
-          <p><strong>Ginkgo Biloba</strong><br><small class="text-muted">Memory & Circulation</small></p>
+      <!-- HOTBAR -->
+      <div class="hotbar">
+        <button title="Book Consultation"><i class="fas fa-calendar-plus"></i></button>
+        <button title="Refill Rx"><i class="fas fa-prescription-bottle-alt"></i></button>
+        <button title="Log Mood"><i class="fas fa-smile"></i></button>
+        <button title="Start Telehealth"><i class="fas fa-video"></i></button>
+      </div>
+
+      <!-- AI INSIGHTS PANEL -->
+      <div class="card" id="insightsPanel" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <i class="fas fa-lightbulb"></i><h3>AI Insights & Recommendations</h3>
+          <button id="toggleInsights" style="margin-left:auto;"><i class="fas fa-chevron-up"></i></button>
         </div>
-        <div class="card">
-          <div class="card-header"><i class="fas fa-smile-beam"></i><h3>Mood</h3></div>
-          <p><strong>Happy</strong> — Try deep breathing</p>
-        </div>
-        <div class="card">
-          <div class="card-header"><i class="fas fa-pills"></i><h3>Medications</h3></div>
-          <p>5 tracked — Up to date</p>
+        <div id="insightsContent">
+          <p>Your average sleep dropped <strong>20 min</strong> this week—consider winding down earlier.</p>
+          <p>Hydration is at <strong>60%</strong> of goal—aim for 8 glasses daily.</p>
         </div>
       </div>
 
-      <!-- Charts (3 total) -->
-      <div class="grid-2">
+      <!-- WIDGET GRID (draggable) -->
+      <div id="widgetGrid">
+        <div class="widget" draggable="true"><h4>Herb of the Day</h4><p>Ginkgo Biloba—Memory & Circulation</p></div>
+        <div class="widget" draggable="true"><h4>Mood Tracker</h4><p>Current: 😊</p></div>
+        <div class="widget" draggable="true"><h4>Glucose Monitor</h4><p>5.6 mmol/L</p></div>
+        <div class="widget" draggable="true"><h4>Sleep Score</h4><p>82/100</p></div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="grid-2" style="margin-top:1.5rem;">
         <div class="chart-box">
           <h4><i class="fas fa-utensils"></i> Nutrition Breakdown</h4>
           <canvas id="chartNutrition"></canvas>
@@ -196,35 +209,33 @@
           <canvas id="chartWellness"></canvas>
         </div>
       </div>
-      <div class="chart-box" style="margin-bottom:1.5rem;">
+      <div class="chart-box" style="margin:1.5rem 0;">
         <h4><i class="fas fa-walking"></i> Activity Trend</h4>
         <canvas id="chartActivity"></canvas>
       </div>
 
-      <!-- Progress Bars -->
+      <!-- PROGRESS BARS -->
       <div class="card progress-container">
-        <label for="hydration">Hydration Goal</label>
-        <div class="progress-bar"><div id="hydrationBar" style="width: 60%;"></div></div>
-        <label for="exercise" style="margin-top:1rem;">Exercise Goal</label>
-        <div class="progress-bar"><div id="exerciseBar" style="width: 45%;"></div></div>
+        <label>Hydration Goal</label>
+        <div class="progress-bar"><div id="hydrationBar" style="width:60%"></div></div>
+        <label style="margin-top:1rem;">Exercise Goal</label>
+        <div class="progress-bar"><div id="exerciseBar" style="width:45%"></div></div>
       </div>
 
-      <!-- Calendar + Appointments & Doses -->
+      <!-- MEDICATION ADHERENCE & REFILL -->
+      <div class="card" style="margin-top:1.5rem;">
+        <h4><i class="fas fa-pills"></i> Medication Adherence</h4>
+        <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem;">
+          <li><input type="checkbox" id="dose1"><label for="dose1"> Metformin 500mg — May 16, 8:00 AM</label> <button class="refillBtn">Refill</button></li>
+          <li><input type="checkbox" id="dose2"><label for="dose2"> Vitamin D 1000IU — May 16, 8:00 PM</label> <button class="refillBtn">Refill</button></li>
+        </ul>
+      </div>
+
+      <!-- CALENDAR + APPTS + DOSES -->
       <div class="grid-2">
         <div class="card">
           <h4><i class="fas fa-calendar-alt"></i> May 2025 Calendar</h4>
-          <table class="calendar">
-            <thead>
-              <tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr>
-            </thead>
-            <tbody>
-              <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
-              <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
-              <tr><td>13</td><td>14</td><td>15</td><td><span style="background:var(--accent-light);border-radius:50%;padding:0.2rem 0.5rem;">16</span></td><td>17</td><td>18</td><td>19</td></tr>
-              <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
-              <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
-            </tbody>
-          </table>
+          <table class="calendar">…</table>
         </div>
         <div>
           <div class="card">
@@ -244,85 +255,152 @@
         </div>
       </div>
 
-      <!-- Extra Content -->
-      <div class="grid-3">
+      <!-- WEARABLE INTEGRATIONS -->
+      <div class="card" style="margin-top:1.5rem;">
+        <h4><i class="fas fa-wifi"></i> Sync Devices</h4>
+        <p>Connect to Fitbit, Apple Health, Garmin…</p>
+        <button>Manage Connections</button>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="card" style="margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <h4><i class="fas fa-file-download"></i> Reports</h4>
+        <div>
+          <button id="downloadMonthly">Download Monthly PDF</button>
+          <button id="downloadQuarterly">Download Quarterly PDF</button>
+        </div>
+      </div>
+
+      <!-- NEWS & EDUCATION -->
+      <div class="grid-2" style="margin-top:1.5rem;">
         <div class="card">
           <h4><i class="fas fa-newspaper"></i> Health News</h4>
-          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
-            <li>New study on turmeric benefits</li>
-            <li>5 ways to improve sleep quality</li>
-            <li>Guide: Mindful breathing exercises</li>
-          </ul>
+          <div style="max-height:150px; overflow-y:auto; font-size:0.9rem; opacity:0.8;">
+            <p>• Turmeric: anti-inflammatory benefits</p>
+            <p>• 7 tips for better sleep quality</p>
+            <p>• Mindful breathing exercises guide</p>
+          </div>
         </div>
         <div class="card">
-          <h4><i class="fas fa-lightbulb"></i> Quick Tips</h4>
-          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
-            <li>Drink a glass of water first thing.</li>
-            <li>Stand up every hour to stretch.</li>
-            <li>Spend 5 minutes in meditation.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h4><i class="fas fa-heart"></i> Favorites</h4>
-          <ul style="list-style:none; margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">
-            <li>Ginger Tea</li>
-            <li>Evening Walk</li>
-            <li>Reading before bed</li>
-          </ul>
+          <h4><i class="fas fa-globe"></i> Accessibility</h4>
+          <label>Font Size:
+            <select id="fontSize">
+              <option value="14px">Small</option>
+              <option value="16px" selected>Medium</option>
+              <option value="18px">Large</option>
+            </select>
+          </label>
+          <label style="display:block; margin-top:0.5rem;">
+            <input type="checkbox" id="highContrast"> High Contrast Mode
+          </label>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- SOS BUTTON -->
+  <div id="sos" title="Emergency SOS"><i class="fas fa-phone"></i></div>
+
+  <!-- CHATBOT -->
+  <div id="chatbot">
+    <header>Help Chat <i id="closeChat" class="fas fa-times" style="float:right; cursor:pointer;"></i></header>
+    <div class="messages"></div>
+    <input id="chatInput" placeholder="Ask me anything…" />
+  </div>
+
   <script>
-    // Sidebar collapse
+    // Sidebar collapse / mobile toggle
     const sidebar = document.getElementById('sidebar'),
-          toggleBtn = document.querySelector('.toggle-sidebar');
-    toggleBtn.onclick = () => sidebar.classList.toggle('collapsed');
+          toggleBtn = document.querySelector('.toggle-sidebar'),
+          mobileToggle = document.getElementById('toggleSidebarBtn');
+    toggleBtn.onclick = ()=> sidebar.classList.toggle('collapsed');
+    mobileToggle.onclick = ()=> sidebar.classList.toggle('show');
 
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
-    themeToggle.onclick = () => {
+    themeToggle.onclick = ()=> {
       document.documentElement.classList.toggle('light');
       themeToggle.classList.toggle('fa-sun');
       themeToggle.classList.toggle('fa-moon');
     };
 
-    // Profile dropdown
+    // Notifications center
+    const notifIcon = document.getElementById('notifIcon'),
+          notifDropdown = document.getElementById('notifDropdown'),
+          clearNotif = document.getElementById('clearNotif');
+    notifIcon.onclick = ()=> notifDropdown.style.display = notifDropdown.style.display==='block'? 'none':'block';
+    clearNotif.onclick = ()=> notifDropdown.querySelectorAll('.item').forEach(i=>i.remove());
+
+    // Profile menu
     const profileIcon = document.getElementById('profileIcon'),
           profileMenu = document.getElementById('profileMenu');
-    profileIcon.onclick = () => profileMenu.style.display =
-      profileMenu.style.display === 'block' ? 'none' : 'block';
-    document.addEventListener('click', e => {
-      if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
-        profileMenu.style.display = 'none';
-      }
+    profileIcon.onclick = ()=> profileMenu.style.display = profileMenu.style.display==='block'? 'none':'block';
+
+    document.addEventListener('click', e=>{
+      if(!notifIcon.contains(e.target) && !notifDropdown.contains(e.target)) notifDropdown.style.display='none';
+      if(!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.style.display='none';
     });
 
-    // Charts initialization
+    // Insights panel collapse
+    const insightsPanel = document.getElementById('insightsPanel'),
+          toggleInsights = document.getElementById('toggleInsights'),
+          insightsContent = document.getElementById('insightsContent');
+    toggleInsights.onclick = ()=>{
+      const showing = insightsContent.style.display!=='none';
+      insightsContent.style.display = showing? 'none':'block';
+      toggleInsights.firstElementChild.classList.toggle('fa-chevron-up');
+      toggleInsights.firstElementChild.classList.toggle('fa-chevron-down');
+    };
+
+    // Font size & contrast
+    document.getElementById('fontSize').onchange = e=> document.body.style.fontSize = e.target.value;
+    document.getElementById('highContrast').onchange = e=>{
+      document.documentElement.classList.toggle('high-contrast', e.target.checked);
+    };
+
+    // SOS quick-dial
+    document.getElementById('sos').onclick = ()=> alert('Calling emergency contact…');
+
+    // Chatbot open/close
+    const chatbot = document.getElementById('chatbot'), closeChat = document.getElementById('closeChat');
+    document.getElementById('hotbar').onclick = ()=> chatbot.style.display='flex';
+    closeChat.onclick = ()=> chatbot.style.display='none';
+
+    // Drag & drop widgets + persist
+    const grid = document.getElementById('widgetGrid');
+    let dragged;
+    grid.addEventListener('dragstart', e=> dragged=e.target);
+    grid.addEventListener('dragover', e=> e.preventDefault());
+    grid.addEventListener('drop', e=>{
+      if(e.target.classList.contains('widget')){
+        grid.insertBefore(dragged, e.target.nextSibling);
+        saveLayout();
+      }
+    });
+    function saveLayout(){
+      const order = [...grid.children].map(w=>w.innerText);
+      localStorage.setItem('widgetOrder', JSON.stringify(order));
+    }
+    function loadLayout(){
+      const order = JSON.parse(localStorage.getItem('widgetOrder')||'[]');
+      if(!order.length) return;
+      const widgets = [...grid.children];
+      order.forEach(text=>{
+        const w = widgets.find(w=>w.innerText===text);
+        if(w) grid.appendChild(w);
+      });
+    }
+    loadLayout();
+
+    // Charts
     new Chart(document.getElementById('chartNutrition'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Carbs', 'Protein', 'Fat'],
-        datasets: [{ data:[45,30,25], backgroundColor:['var(--accent-light)','var(--accent-dark)','rgba(142,205,241,0.5)'] }]
-      },
-      options: { cutout:'70%' }
+      type:'doughnut', data:{ labels:['Carbs','Protein','Fat'], datasets:[{ data:[45,30,25], backgroundColor:['var(--accent-light)','var(--accent-dark)','rgba(142,205,241,0.5)'] }] }, options:{ cutout:'70%' }
     });
     new Chart(document.getElementById('chartWellness'), {
-      type: 'line',
-      data: {
-        labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets:[{ data:[72,75,78,80,77,82,85], borderColor:'var(--accent-light)', fill:true, tension:0.4 }]
-      },
-      options: { plugins:{legend:{display:false}} }
+      type:'line', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ data:[72,75,78,80,77,82,85], borderColor:'var(--accent-light)', backgroundColor:'rgba(142,205,241,0.2)', fill:true, tension:0.4 }] }, options:{ plugins:{legend:{display:false}} }
     });
     new Chart(document.getElementById('chartActivity'), {
-      type: 'bar',
-      data: {
-        labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets:[{ label:'Steps (k)', data:[5,6,7,4,8,9,10], backgroundColor:'var(--accent-light)' }]
-      },
-      options:{ scales:{ y:{ beginAtZero:true } } }
+      type:'bar', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ label:'Steps (k)', data:[5,6,7,4,8,9,10], backgroundColor:'var(--accent-light)' }] }, options:{ scales:{ y:{beginAtZero:true} } }
     });
   </script>
 </body>
