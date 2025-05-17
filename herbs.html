@@ -274,6 +274,54 @@
           <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
         </div>
       </section>
+     <!-- 6. AI‑Driven Research Engine -->
+<section class="module" aria-labelledby="research-section">
+  <h2 id="research-section"><i class="fas fa-book-reader"></i>Research Engine</h2>
+  <form onsubmit="runResearch(); return false;">
+    <label for="researchQuery">Search studies or texts</label>
+    <input id="researchQuery" placeholder="e.g. ‘Turmeric anti‑inflammatory clinical trial’" required/>
+    <button type="submit"><i class="fas fa-search"></i> Search</button>
+  </form>
+  <div id="researchResults" class="small" style="margin-top:.5rem;">
+    <!-- Filled by runResearch() -->
+  </div>
+</section>
+<!-- 7. Inventory & Sourcing Forecast -->
+<section class="module" aria-labelledby="inventory-section">
+  <h2 id="inventory-section"><i class="fas fa-warehouse"></i>Inventory Forecast</h2>
+  <form onsubmit="forecastInventory(); return false;">
+    <label for="forecastHerb">Herb</label>
+    <select id="forecastHerb" required>
+      <option>Turmeric</option><option>Ginkgo Biloba</option><option>Ashwagandha</option>
+      <option>Echinacea</option><option>Valerian</option>
+    </select>
+    <label for="forecastPeriod">Period (weeks)</label>
+    <input type="number" id="forecastPeriod" min="1" value="4" required/>
+    <button type="submit"><i class="fas fa-chart-line"></i> Forecast</button>
+  </form>
+  <p id="inventoryResult" class="small"></p>
+</section>
+<!-- 8. Genetic-Herbal Match -->
+<section class="module" aria-labelledby="genetics-section">
+  <h2 id="genetics-section"><i class="fas fa-dna"></i>Genetic Match</h2>
+  <form onsubmit="runGeneticMatch(); return false;">
+    <label for="geneticUpload">Upload genetic report (CSV/JSON)</label>
+    <input type="file" id="geneticUpload" accept=".csv,.json" required/>
+    <button type="submit"><i class="fas fa-user-md"></i> Analyze</button>
+  </form>
+  <p id="geneticResult" class="small"></p>
+</section>
+<button type="button" onclick="startAR();"><i class="fas fa-camera-retro"></i> Live AR Scan</button>
+<video id="arVideo" style="display:none;width:100%;border-radius:var(--radius);" autoplay muted></video>
+<div class="stat-card"><i class="fas fa-book-reader"></i>
+  <div class="details"><h3>Research</h3><p id="stat-research">0</p></div>
+</div>
+<div class="stat-card"><i class="fas fa-warehouse"></i>
+  <div class="details"><h3>Inventory</h3><p id="stat-inventory">0</p></div>
+</div>
+<div class="stat-card"><i class="fas fa-dna"></i>
+  <div class="details"><h3>Genetics</h3><p id="stat-genetics">0</p></div>
+</div>
 
       <!-- Existing: AI Herb Identification -->
       <section class="module" aria-labelledby="herb-section">
@@ -341,6 +389,12 @@
   </div>
 
   <script>
+    ['dx','form','id','pred','dose','int','research','inventory','genetics'].forEach(k => {
+  if (!localStorage.getItem(k)) localStorage.setItem(k, '0');
+  const el = document.getElementById(`stat-${k}`);
+  if (el) el.textContent = localStorage.getItem(k);
+});
+
     // Persist & apply theme
     const themeBtn = document.getElementById('themeToggle');
     if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light');
@@ -409,6 +463,42 @@
         chatBox.scrollTop = chatBox.scrollHeight;
       }, 500);
     };
+
+    // stub in your <script>:
+function runResearch() {
+  bumpStat('research');
+  const q = document.getElementById('researchQuery').value;
+  document.getElementById('researchResults').textContent =
+    `🔍 Scanning literature for “${q}”… (results coming soon)`;
+}
+// stub in your <script>:
+function forecastInventory() {
+  bumpStat('inventory');
+  const herb = document.getElementById('forecastHerb').value;
+  const weeks = document.getElementById('forecastPeriod').value;
+  document.getElementById('inventoryResult').textContent =
+    `📈 Predicted demand for ${herb} over ${weeks} weeks: ${(Math.random()*200+50).toFixed(0)} units.`;
+}
+// stub in your <script>:
+function runGeneticMatch() {
+  bumpStat('genetics');
+  // in production: parse the file, call your AI service...
+  document.getElementById('geneticResult').textContent =
+    '🧬 Analysis complete: You may have slower ashwagandha metabolism; consider 50% dose.';
+}
+async function startAR() {
+  const vid = document.getElementById('arVideo');
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    vid.srcObject = stream;
+    vid.style.display = 'block';
+    // Here you’d hook into a WebAR / TensorFlow.js model…
+    document.getElementById('ingResult').textContent = '🔍 Point camera at herb to identify…';
+  } catch (e) {
+    console.error(e);
+    document.getElementById('ingResult').textContent = '⚠️ Camera access denied.';
+  }
+}
 
     // Existing: AI Herb Identification
     function identifyHerb() {
