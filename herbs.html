@@ -389,6 +389,8 @@
   </div>
 
   <script>
+    const API_BASE = 'http://localhost:4000/api'; 
+    
     // Initialize and display usage stats for all modules
     const statKeys = ['dx','form','id','pred','dose','int','chat','research','inventory','genetics'];
     statKeys.forEach(key => {
@@ -544,23 +546,33 @@
     }
 
     // Dosage Calculator
-    function calcDosage() {
-      const w = +document.getElementById('weight').value;
-      bumpStat('dose');
-      const d = (w * 0.5).toFixed(1);
-      document.getElementById('dosageResult').textContent = `Suggested: ${d} mg`;
-    }
+    async function calcDosage() {
+    bumpStat('dose');
+    const weight  = +document.getElementById('weight').value;
+    const symptom = document.getElementById('symptom').value.trim();
+    const res = await fetch(`${API_BASE}/dosage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ weight, symptom })
+    });
+    const { dosage } = await res.json();
+    document.getElementById('dosageResult').textContent = dosage;
+  }
+
 
     // Interaction Checker
-    function checkInteraction() {
-      const a = document.getElementById('herbA').value;
-      const b = document.getElementById('herbB').value;
-      bumpStat('int');
-      const msg = a === b
-        ? 'Same herb – no interaction.'
-        : `No known interaction between ${a} & ${b}.`;
-      document.getElementById('interactionResult').textContent = msg;
-    }
+   async function checkInteraction() {
+    bumpStat('int');
+    const herbA = document.getElementById('herbA').value;
+    const herbB = document.getElementById('herbB').value;
+    const res = await fetch(`${API_BASE}/interaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ herbA, herbB })
+    });
+    const { interaction } = await res.json();
+    document.getElementById('interactionResult').textContent = interaction;
+  }
 
     // Herb search filter
     document.getElementById('searchHerb').addEventListener('input', e => {
