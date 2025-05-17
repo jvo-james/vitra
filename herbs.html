@@ -424,68 +424,123 @@
     }
 
     // 1. Diagnostics
-    function runDiagnostics() {
-      bumpStat('dx');
-      document.getElementById('dxResult').textContent = '🏷️ Suggestion: Turmeric 500mg daily + Boswellia.';
-    }
+    async function runDiagnostics() {
+   bumpStat('dx');
+   const symptoms = document.getElementById('dxInput').value;
+   const res = await fetch('http://localhost:4000/api/diagnostics', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ symptoms })
+   });
+   const { suggestion } = await res.json();
+   document.getElementById('dxResult').textContent = suggestion;
+ }
 
     // 2. Personalized Formulations
-    function makePersonalized() {
-      const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value);
-      const age = document.getElementById('pfAge').value;
-      const w = document.getElementById('pfWeight').value;
-      bumpStat('form');
-      document.getElementById('pfResult').textContent =
-        `🧪 Custom formula for ${age}yr/${w}kg: ${herbs.join(', ')}.`;
-    }
-
+    async function makePersonalized() {
+   bumpStat('form');
+   const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value);
+   const age   = document.getElementById('pfAge').value;
+   const weight= document.getElementById('pfWeight').value;
+   const res = await fetch('http://localhost:4000/api/formulations', {
+     method: 'POST',
+     headers:{ 'Content-Type':'application/json' },
+     body: JSON.stringify({ herbs, age, weight })
+   });
+   const { formula } = await res.json();
+   document.getElementById('pfResult').textContent = formula;
+ }
     // 3. Ingredient Identification
-    function identifyIngredient() {
-      bumpStat('id');
-      document.getElementById('ingResult').textContent = '✅ Verified: Ginkgo Biloba (98% purity).';
-    }
+    async function identifyIngredient() {
+   bumpStat('id');
+   const fileInput = document.getElementById('ingUpload');
+   const formData = new FormData();
+   formData.append('image', fileInput.files[0]);
+   const res = await fetch('http://localhost:4000/api/identify-ingredient', {
+     method: 'POST',
+     body: formData
+   });
+   const { species, purity } = await res.json();
+   document.getElementById('ingResult').textContent =
+     `✅ Verified: ${species} (${purity} purity).`;
+ }
 
     // 4. Predictive Efficacy
-    function runPrediction() {
-      bumpStat('pred');
-      document.getElementById('predResult').textContent = '📊 Efficacy: 87% predicted relief.';
-    }
+    async function runPrediction() {
+   bumpStat('pred');
+   const [ herb, condition ] = document.getElementById('predInput').value.split(' ');
+   const res = await fetch('http://localhost:4000/api/predictive‑efficacy', {
+     method:'POST',
+     headers:{ 'Content-Type':'application/json' },
+     body: JSON.stringify({ herb, condition })
+   });
+   const { efficacy } = await res.json();
+   document.getElementById('predResult').textContent = efficacy;
+ }
 
     // 5. Education Chatbot
     const chatBox = document.getElementById('chatBox');
-    document.getElementById('sendChat').onclick = () => {
-      const q = document.getElementById('chatInput').value.trim();
-      if (!q) return;
-      chatBox.innerHTML += `<p><strong>You:</strong> ${q}</p>`;
-      document.getElementById('chatInput').value = '';
-      setTimeout(() => {
-        chatBox.innerHTML += `<p><strong>Vitra AI:</strong> Here’s an overview on ${q}…</p>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }, 500);
-    };
-
+    document.getElementById('sendChat').onclick = async () => {
+   const message = document.getElementById('chatInput').value.trim();
+   if (!message) return;
+   bumpStat('chat');
+   // append user
+   chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+   document.getElementById('chatInput').value = '';
+   // call backend
+   const history = []; // if you track full history, include here
+   const res = await fetch('http://localhost:4000/api/chat', {
+     method:'POST',
+     headers:{ 'Content-Type':'application/json' },
+     body: JSON.stringify({ message, history })
+   });
+   const { reply } = await res.json();
+   chatBox.innerHTML += `<p><strong>Vitra AI:</strong> ${reply}</p>`;
+   chatBox.scrollTop = chatBox.scrollHeight;
+ };
     // stub in your <script>:
-function runResearch() {
-  bumpStat('research');
-  const q = document.getElementById('researchQuery').value;
-  document.getElementById('researchResults').textContent =
-    `🔍 Scanning literature for “${q}”… (results coming soon)`;
-}
+async function runResearch() {
+   bumpStat('research');
+   const query = document.getElementById('researchQuery').value;
+   const res = await fetch('http://localhost:4000/api/research', {
+     method:'POST',
+     headers:{ 'Content-Type':'application/json' },
+     body: JSON.stringify({ query })
+   });
+   const { summary } = await res.json();
+   document.getElementById('researchResults').textContent = summary;
+ }
+    
 // stub in your <script>:
-function forecastInventory() {
-  bumpStat('inventory');
-  const herb = document.getElementById('forecastHerb').value;
-  const weeks = document.getElementById('forecastPeriod').value;
-  document.getElementById('inventoryResult').textContent =
-    `📈 Predicted demand for ${herb} over ${weeks} weeks: ${(Math.random()*200+50).toFixed(0)} units.`;
-}
+async function forecastInventory() {
+   bumpStat('inventory');
+   const herb = document.getElementById('forecastHerb').value;
+   const weeks= document.getElementById('forecastPeriod').value;
+   const res = await fetch('http://localhost:4000/api/inventory-forecast', {
+     method:'POST',
+     headers:{ 'Content-Type':'application/json' },
+     body: JSON.stringify({ herb, weeks })
+   });
+   const { forecast } = await res.json();
+   document.getElementById('inventoryResult').textContent =
+     `📈 Forecast: [${forecast.join(', ')}] units per week.`;
+ }
+
+    
 // stub in your <script>:
-function runGeneticMatch() {
-  bumpStat('genetics');
-  // in production: parse the file, call your AI service...
-  document.getElementById('geneticResult').textContent =
-    '🧬 Analysis complete: You may have slower ashwagandha metabolism; consider 50% dose.';
-}
+async function runGeneticMatch() {
+   bumpStat('genetics');
+   const fileInput = document.getElementById('geneticUpload');
+   const formData = new FormData();
+   formData.append('report', fileInput.files[0]);
+   const res = await fetch('http://localhost:4000/api/genetic-match', {
+     method:'POST',
+     body: formData
+   });
+   const { analysis } = await res.json();
+   document.getElementById('geneticResult').textContent = analysis;
+ }
+    
 async function startAR() {
   const vid = document.getElementById('arVideo');
   try {
