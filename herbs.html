@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" class="">
+    <!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Vitra – Herbal Medicine AI Hub</title>
   <!-- Fonts & Icons -->
@@ -11,615 +12,346 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    /* RESET & BASE */
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+    /* Full-height flex */
+    html, body { height:100%; margin:0; }
+    body {
+      display:flex; font-family:'Montserrat',sans-serif;
+      background:#fff; color:#1E2126; overflow:hidden;
+    }
+    a { text-decoration:none; color:inherit; }
+    button { cursor:pointer; border:none; background:none; }
+
+    /* Palette */
     :root {
-      /* DARK THEME VARIABLES */
       --accent: #8ECDF1;
-      --bg1: #161B22;    /* page background */
-      --bg2: #1E2126;    /* card/module background */
-      --muted: rgba(224,224,224,0.6);
-      --text: #E0E0E0;
-      --radius: 8px;
-    }
-    /* LIGHT THEME OVERRIDES */
-    :root.light {
-      --bg1: #F4F4F4;
-      --bg2: #FFFFFF;
-      --muted: rgba(0,0,0,0.4);
-      --text: #111111;
-    }
-    html, body {
-      height: 100%;
-      background: var(--bg1);
-      color: var(--text);
-      transition: background .3s, color .3s;
-    }
-    a { color: inherit; text-decoration: none; }
-    button,input,select,textarea { font-family: inherit; }
-    button { cursor:pointer; border:none; background:none; color:inherit; }
-    .sr-only {
-      position: absolute !important;
-      width: 1px; height: 1px;
-      padding: 0; margin: -1px;
-      overflow: hidden; clip: rect(0,0,0,0);
-      white-space: nowrap; border: 0;
+      --bg: #FFFFFF;
+      --card: #F5F7FA;
+      --text: #1E2126;
+      --muted: rgba(30,33,38,0.6);
     }
 
-    /* SIDEBAR */
+    /* Sidebar */
     #sidebar {
-      width: 240px;
-      background: var(--bg1);
-      display: flex; flex-direction: column;
-      transition: width .3s;
+      width:220px; background:var(--bg);
+      border-right:1px solid #E2E8F0;
+      position:fixed; top:0; bottom:0; left:0;
+      display:flex; flex-direction:column; z-index:100;
     }
-    .brand { display:flex; align-items:center; gap:.75rem;
-      padding:1.5rem; font-size:1.3rem; font-weight:700;
-      color: var(--accent);
+    .brand {
+      padding:1.5rem; font-size:1.4rem; font-weight:700;
+      color:var(--accent);
     }
-    .nav-links { flex:1; }
-    .nav-links a { display:flex; align-items:center; gap:1rem;
-      padding:.9rem 1.2rem; transition: background .2s;
+    nav a {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.9rem 1.2rem; color:var(--text);
+      transition:background .2s;
     }
-    .nav-links a:hover, .nav-links a.active { background: var(--accent)20; }
-    .nav-links i { width:24px; text-align:center; font-size:1.2rem; color:var(--accent); }
-    .toggle-sidebar { padding:1rem; text-align:center; border-top:1px solid #29303A; cursor:pointer; }
+    nav a.active, nav a:hover {
+      background:var(--card);
+    }
+    nav i { width:24px; text-align:center; }
 
-    /* MAIN */
-    #main { flex:1; display:flex; flex-direction:column; }
-    header {
+    /* Topbar */
+    #topbar {
+      position:fixed; top:0; left:220px; right:0; height:64px;
+      background:var(--bg); border-bottom:1px solid #E2E8F0;
+      display:flex; align-items:center; justify-content:flex-end;
+      padding:0 2rem; z-index:90;
+    }
+    #topbar a { margin-left:2rem; font-weight:500; color:var(--text); }
+    .account { font-size:1.3rem; color:var(--muted); margin-left:2rem; cursor:pointer; }
+
+    /* Main scrollable */
+    #main {
+      position:absolute; top:64px; bottom:0; left:220px; right:0;
+      overflow-y:auto; padding:2rem;
+    }
+
+    /* Section cards */
+    .card {
+      background:var(--card); border-radius:8px; padding:1rem;
+      margin-bottom:1.5rem; transition:transform .2s;
+    }
+    .card:hover { transform:translateY(-4px); }
+    .card h4 { margin-bottom:.5rem; }
+    .small { color:var(--muted); font-size:.9rem; }
+
+    /* Hero header */
+    .hero {
       display:flex; align-items:center; justify-content:space-between;
-      padding:1rem 2rem;
-      background: var(--bg1)CC; backdrop-filter: blur(6px);
-      position: sticky; top:0; z-index:10;
+      margin-bottom:2rem;
     }
-    .header-left { display:flex; align-items:center; gap:1rem; }
-    #toggleSidebarBtn { font-size:1.4rem; cursor:pointer; }
-    .greeting h1 { font-size:1.9rem; display:flex; align-items:center; gap:.5rem; }
-    .greeting p { opacity:.75; }
-    .header-right i { margin-left:1rem; font-size:1.4rem; cursor:pointer; transition: transform .2s; }
-    .header-right i:hover { transform: scale(1.2); }
-    .content { padding:1rem 2rem; overflow-y:auto; flex:1; }
+    .hero h1 {
+      font-size:2rem; font-weight:600; margin-bottom:0.5rem;
+    }
+    .hero button {
+      background:var(--accent); color:#000;
+      padding:.75rem 1.5rem; border-radius:8px;
+      font-weight:500; transition:background .2s;
+    }
+    .hero button:hover { background:#76bde0; }
 
-    /* STAT CARDS */
-    .stats {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-      gap:1.5rem; margin-bottom:1.5rem;
+    /* Section title */
+    .section-title {
+      font-size:1.4rem; font-weight:600; margin:2rem 0 1rem;
     }
-    .stat-card {
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding:1rem;
-      display:flex; align-items:center; gap:1rem;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .stat-card i { font-size:1.8rem; color:var(--accent); }
-    .stat-card .details h3 { font-size:1.1rem; margin-bottom:.3rem; }
-    .stat-card .details p { opacity:.8; color:var(--accent); }
 
-    /* MODULES */
-    section.module {
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding:1rem;
-      margin-bottom:1.5rem;
-      transition: box-shadow .2s;
+    /* Grid utils */
+    .grid-2 {
+      display:grid; gap:1rem;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     }
-    section.module:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    .grid-3 {
+      display:grid; gap:1rem;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
     }
-    section.module h2 {
-      font-size:1.2rem;
-      margin-bottom:.75rem;
-      display:flex; align-items:center; gap:.5rem;
-    }
-    section.module form { display:flex; flex-direction:column; gap:.5rem; }
-    section.module label { font-size:.9rem; }
-    section.module input, section.module select, section.module textarea {
-      width:100%;
-      background: var(--bg1);
-      border:1px solid #29303A;
-      padding:.5rem;
-      border-radius: var(--radius);
-      color: inherit;
-      transition: border-color .2s;
-    }
-    section.module input:focus, section.module select:focus, section.module textarea:focus {
-      border-color: var(--accent);
-      outline:none;
-    }
-    section.module button {
-      background: var(--accent);
-      color: var(--bg1);
-      padding:.5rem 1rem;
-      border-radius: var(--radius);
-      transition: background .2s;
-      align-self:flex-start;
-    }
-    section.module button:hover { background: var(--accent)CC; }
-    .small { font-size:.9rem; color: var(--muted); margin-top:.5rem; }
+    canvas.chart { width:100%!important; height:160px!important; }
 
-    /* CHART */
-    .chart-box {
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding:1rem;
-      margin-bottom:1.5rem;
+    /* Camera widget */
+    #camera-stream {
+      width:100%; max-width:400px;
+      border-radius:8px; background:#000;
     }
-    .chart-box canvas { width:100%!important; height:180px!important; }
+    #snap-btn {
+      margin-top:.5rem;
+      background:var(--accent); padding:.5rem 1rem;
+      border-radius:4px; color:#000;
+    }
+
+    /* Blend builder */
+    .blend-slider {
+      width:100%; margin:0.5rem 0;
+    }
+
+    /* Chatbot */
+    #herbChatBtn {
+      position:fixed; bottom:20px; left:20px;
+      background:var(--accent); border:none; padding:1rem;
+      border-radius:50%; font-size:1.5rem; z-index:80;
+      cursor:pointer;
+    }
+    .chat-modal {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5);
+      display:none; align-items:center; justify-content:center; z-index:90;
+    }
+    .chat-box {
+      background:var(--bg); padding:1rem; border-radius:8px;
+      width:90%; max-width:400px;
+    }
+    .chat-box header {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:.5rem;
+    }
+    .chat-box input {
+      width:100%; padding:.5rem; border:1px solid #E2E8F0;
+      border-radius:4px; margin-top:.5rem;
+    }
+
   </style>
 </head>
 <body>
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="brand"><i class="fas fa-medkit"></i>Vitra</div>
-    <nav class="nav-links">
-      <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-      <a href="herbs.html" class="active"><i class="fas fa-seedling"></i>Herbal AI</a>
-      <a href="mental.html"><i class="fas fa-brain"></i>Mental Health</a>
+    <div class="brand"><i class="fas fa-medkit"></i> VITRA</div>
+    <nav>
+      <a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a>
+      <a href="herbs.html" class="active"><i class="fas fa-seedling"></i>Herbs</a>
+      <a href="mental.html"><i class="fas fa-brain"></i>Mental</a>
       <a href="diet.html"><i class="fas fa-utensils"></i>Diet</a>
       <a href="pharmacy.html"><i class="fas fa-pills"></i>E-Pharmacy</a>
       <a href="booking.html"><i class="fas fa-calendar-check"></i>Booking</a>
-      <a href="settings.html"><i class="fas fa-cog"></i>Settings</a>
+      <a href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
     </nav>
-    <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
   </aside>
 
-  <!-- MAIN -->
-  <div id="main">
-    <header>
-      <div class="header-left">
-        <i id="toggleSidebarBtn" class="fas fa-bars"></i>
-        <div class="greeting">
-          <h1><i class="fas fa-seedling"></i>Herbal AI Hub</h1>
-          <p>Powerful AI features for herbal medicine</p>
-        </div>
-      </div>
-      <div class="header-right">
-        <i class="fas fa-bell"></i>
-        <i class="fas fa-user-circle"></i>
-        <i id="themeToggle" class="fas fa-moon" title="Toggle theme"></i>
-      </div>
-    </header>
-
-    <div class="content">
-
-      <!-- Stats -->
-      <div class="stats">
-        <div class="stat-card"><i class="fas fa-stethoscope"></i>
-          <div class="details"><h3>Diagnostics</h3><p id="stat-dx">0</p></div>
-        </div>
-        <div class="stat-card"><i class="fas fa-user-shield"></i>
-          <div class="details"><h3>Formulations</h3><p id="stat-form">0</p></div>
-        </div>
-        <div class="stat-card"><i class="fas fa-search"></i>
-          <div class="details"><h3>ID Requests</h3><p id="stat-id">0</p></div>
-        </div>
-        <div class="stat-card"><i class="fas fa-chart-pie"></i>
-          <div class="details"><h3>Efficacy</h3><p id="stat-pred">0</p></div>
-        </div>
-        <div class="stat-card"><i class="fas fa-calculator"></i>
-          <div class="details"><h3>Dose Calculator</h3><p id="stat-dose">0</p></div>
-        </div>
-        <div class="stat-card"><i class="fas fa-exchange-alt"></i>
-          <div class="details"><h3>Interactions</h3><p id="stat-int">0</p></div>
-        </div>
-      </div>
-
-      <!-- 1. AI-Powered Diagnostic Tools -->
-      <section class="module" aria-labelledby="dx-section">
-        <h2 id="dx-section"><i class="fas fa-stethoscope"></i>AI Diagnostic Tool</h2>
-        <form onsubmit="runDiagnostics(); return false;">
-          <label class="sr-only" for="dxInput">Describe symptoms</label>
-          <textarea id="dxInput" placeholder="Describe symptoms, history, lab results..." required></textarea>
-          <button type="submit"><i class="fas fa-notes-medical"></i> Analyze</button>
-        </form>
-        <p id="dxResult" class="small">Enter patient info to get herbal suggestions.</p>
-      </section>
-
-      <!-- 2. Personalized Herbal Formulations -->
-      <section class="module" aria-labelledby="pf-section">
-        <h2 id="pf-section"><i class="fas fa-user-shield"></i>Personalized Formulation</h2>
-        <form onsubmit="makePersonalized(); return false;">
-          <label for="pfHerbs">Select Herbs</label>
-          <select id="pfHerbs" multiple required>
-            <option>Ginkgo Biloba</option><option>Turmeric</option><option>Valerian</option>
-            <option>Ashwagandha</option><option>Echinacea</option>
-          </select>
-          <label for="pfAge">Age</label>
-          <input type="number" id="pfAge" placeholder="Age" min="0" required>
-          <label for="pfWeight">Weight (kg)</label>
-          <input type="number" id="pfWeight" placeholder="Weight" min="0" required>
-          <button type="submit"><i class="fas fa-cog"></i> Generate</button>
-        </form>
-        <p id="pfResult" class="small">Provide data to receive a custom formula.</p>
-      </section>
-
-      <!-- 3. AI-Driven Ingredient Identification -->
-      <section class="module" aria-labelledby="ing-section">
-        <h2 id="ing-section"><i class="fas fa-leaf"></i>Ingredient Identification</h2>
-        <form onsubmit="identifyIngredient(); return false;">
-          <label for="ingUpload" class="sr-only">Upload image of herb</label>
-          <input type="file" id="ingUpload" accept="image/*" required>
-          <button type="submit"><i class="fas fa-microscope"></i> Identify</button>
-        </form>
-        <p id="ingResult" class="small">Upload to verify species &amp; detect contaminants.</p>
-      </section>
-
-      <!-- 4. Predictive Analysis for Efficacy -->
-      <section class="module" aria-labelledby="pred-section">
-        <h2 id="pred-section"><i class="fas fa-chart-pie"></i>Predictive Efficacy</h2>
-        <form onsubmit="runPrediction(); return false;">
-          <label for="predInput">Herb & Condition</label>
-          <input id="predInput" placeholder="e.g. Turmeric arthritis" required>
-          <button type="submit"><i class="fas fa-brain"></i> Predict</button>
-        </form>
-        <p id="predResult" class="small">Enter herb &amp; condition to get score.</p>
-      </section>
-
-      <!-- 5. AI-Enhanced Education Chatbot -->
-      <section class="module" aria-labelledby="chat-section">
-        <h2 id="chat-section"><i class="fas fa-graduation-cap"></i>Education Chatbot</h2>
-        <div id="chatBox" style="max-height:200px;overflow-y:auto;border:1px solid #29303A;padding:.5rem;border-radius:var(--radius);background:var(--bg1);"></div>
-        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
-          <label for="chatInput" class="sr-only">Chat input</label>
-          <input id="chatInput" placeholder="Ask about herbal medicine..." required>
-          <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
-        </div>
-      </section>
-     <!-- 6. AI‑Driven Research Engine -->
-<section class="module" aria-labelledby="research-section">
-  <h2 id="research-section"><i class="fas fa-book-reader"></i>Research Engine</h2>
-  <form onsubmit="runResearch(); return false;">
-    <label for="researchQuery">Search studies or texts</label>
-    <input id="researchQuery" placeholder="e.g. ‘Turmeric anti‑inflammatory clinical trial’" required/>
-    <button type="submit"><i class="fas fa-search"></i> Search</button>
-  </form>
-  <div id="researchResults" class="small" style="margin-top:.5rem;">
-    <!-- Filled by runResearch() -->
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <a href="services.html">Services</a>
+    <a href="profile.html">Profile</a>
+    <a href="#">Account</a>
+    <i class="fas fa-user-circle account"></i>
   </div>
-</section>
-<!-- 7. Inventory & Sourcing Forecast -->
-<section class="module" aria-labelledby="inventory-section">
-  <h2 id="inventory-section"><i class="fas fa-warehouse"></i>Inventory Forecast</h2>
-  <form onsubmit="forecastInventory(); return false;">
-    <label for="forecastHerb">Herb</label>
-    <select id="forecastHerb" required>
-      <option>Turmeric</option><option>Ginkgo Biloba</option><option>Ashwagandha</option>
-      <option>Echinacea</option><option>Valerian</option>
-    </select>
-    <label for="forecastPeriod">Period (weeks)</label>
-    <input type="number" id="forecastPeriod" min="1" value="4" required/>
-    <button type="submit"><i class="fas fa-chart-line"></i> Forecast</button>
-  </form>
-  <p id="inventoryResult" class="small"></p>
-</section>
-<!-- 8. Genetic-Herbal Match -->
-<section class="module" aria-labelledby="genetics-section">
-  <h2 id="genetics-section"><i class="fas fa-dna"></i>Genetic Match</h2>
-  <form onsubmit="runGeneticMatch(); return false;">
-    <label for="geneticUpload">Upload genetic report (CSV/JSON)</label>
-    <input type="file" id="geneticUpload" accept=".csv,.json" required/>
-    <button type="submit"><i class="fas fa-user-md"></i> Analyze</button>
-  </form>
-  <p id="geneticResult" class="small"></p>
-</section>
-<button type="button" onclick="startAR();"><i class="fas fa-camera-retro"></i> Live AR Scan</button>
-<video id="arVideo" style="display:none;width:100%;border-radius:var(--radius);" autoplay muted></video>
-<div class="stat-card"><i class="fas fa-book-reader"></i>
-  <div class="details"><h3>Research</h3><p id="stat-research">0</p></div>
-</div>
-<div class="stat-card"><i class="fas fa-warehouse"></i>
-  <div class="details"><h3>Inventory</h3><p id="stat-inventory">0</p></div>
-</div>
-<div class="stat-card"><i class="fas fa-dna"></i>
-  <div class="details"><h3>Genetics</h3><p id="stat-genetics">0</p></div>
-</div>
 
-      <!-- Existing: AI Herb Identification -->
-      <section class="module" aria-labelledby="herb-section">
-        <h2 id="herb-section"><i class="fas fa-camera"></i>AI Herb Identification</h2>
-        <form onsubmit="identifyHerb(); return false;">
-          <label for="herbUpload" class="sr-only">Upload herb image</label>
-          <input type="file" id="herbUpload" accept="image/*" required>
-          <button type="submit"><i class="fas fa-search"></i> Identify</button>
-        </form>
-        <p id="identifyResult" class="small">Upload an image to identify the herb.</p>
-      </section>
+  <!-- MAIN CONTENT -->
+  <div id="main">
 
-      <!-- Existing: Dosage Calculator -->
-      <section class="module" aria-labelledby="dose-section">
-        <h2 id="dose-section"><i class="fas fa-calculator"></i>Dosage Calculator</h2>
-        <form onsubmit="calcDosage(); return false;">
-          <label for="weight">Weight (kg)</label>
-          <input type="number" id="weight" placeholder="Weight" min="0" required>
-          <label for="symptom">Symptom</label>
-          <input type="text" id="symptom" placeholder="e.g. headache" required>
-          <button type="submit"><i class="fas fa-check"></i> Calculate</button>
-        </form>
-        <p id="dosageResult" class="small"></p>
-      </section>
-
-      <!-- Existing: Interaction Checker -->
-      <section class="module" aria-labelledby="int-section">
-        <h2 id="int-section"><i class="fas fa-exchange-alt"></i>Interaction Checker</h2>
-        <form onsubmit="checkInteraction(); return false;">
-          <label for="herbA">Herb A</label>
-          <select id="herbA" required>
-            <option>Ginkgo Biloba</option><option>Turmeric</option><option>St. John’s Wort</option>
-          </select>
-          <label for="herbB">Herb B</label>
-          <select id="herbB" required>
-            <option>Ginkgo Biloba</option><option>Turmeric</option><option>St. John’s Wort</option>
-          </select>
-          <button type="submit"><i class="fas fa-search"></i> Check</button>
-        </form>
-        <p id="interactionResult" class="small"></p>
-      </section>
-
-      <!-- Existing: Encyclopedia -->
-      <section class="module" aria-labelledby="enc-section">
-        <h2 id="enc-section"><i class="fas fa-book"></i>Herb Encyclopedia</h2>
-        <label for="searchHerb" class="sr-only">Search herbs</label>
-        <input id="searchHerb" placeholder="Search herbs…" />
-        <table style="width:100%;margin-top:.5rem;">
-          <thead><tr><th>Name</th><th>Use</th><th>Category</th></tr></thead>
-          <tbody id="herbTable">
-            <tr><td>Ginkgo Biloba</td><td>Memory</td><td>Leaf</td></tr>
-            <tr><td>Turmeric</td><td>Inflammation</td><td>Root</td></tr>
-            <tr><td>St. John’s Wort</td><td>Mood</td><td>Flower</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Trending Herbs Chart -->
-      <div class="chart-box">
-        <h4><i class="fas fa-chart-line"></i>Trending Herbs</h4>
-        <canvas id="trendingChart"></canvas>
+    <!-- Hero -->
+    <div class="hero">
+      <div>
+        <h1>Herbal Medicine</h1>
+        <p class="small">AI‑powered herb identification, formulation & safety</p>
       </div>
-
+      <img src="herb_banner.png" alt="Herbal illustration" style="height:100px; border-radius:8px;">
     </div>
+
+    <!-- 1. Snap & Identify -->
+    <div class="card">
+      <h4><i class="fas fa-camera"></i> Snap & Identify</h4>
+      <video id="camera-stream" autoplay></video><br>
+      <button id="snap-btn"><i class="fas fa-camera-retro"></i> Capture</button>
+      <p id="identify-result" class="small"></p>
+    </div>
+
+    <!-- 2. Phytochemical Profiling & Dosage -->
+    <div class="card">
+      <h4><i class="fas fa-flask"></i> Phytochemical Profiling & Dosage</h4>
+      <label>Age: <input type="number" id="age" min="0" max="120" value="30"></label><br>
+      <label>Weight (kg): <input type="number" id="weight" min="30" max="200" value="70"></label><br>
+      <label>Genetics Profile:
+        <select id="genetics">
+          <option>Standard</option>
+          <option>Fast Metabolizer</option>
+          <option>Slow Metabolizer</option>
+        </select>
+      </label><br>
+      <button id="calc-dose" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
+        Calculate Dosage
+      </button>
+      <p id="dosage-result" class="small"></p>
+    </div>
+
+    <!-- 3. Interaction Prediction -->
+    <div class="card">
+      <h4><i class="fas fa-exclamation-triangle"></i> Herb‑Drug Interaction</h4>
+      <label>Existing Medications:<br>
+        <input type="text" id="med-list" placeholder="e.g. Warfarin, Aspirin" style="width:100%;padding:.5rem;border:1px solid #E2E8F0;border-radius:4px;">
+      </label><br>
+      <button id="check-interaction" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
+        Check Safety
+      </button>
+      <p id="interaction-result" class="small"></p>
+    </div>
+
+    <!-- 4. Blend Builder -->
+    <div class="card">
+      <h4><i class="fas fa-cubes"></i> Blend Optimization</h4>
+      <label>Anti‑Inflammatory: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider1"></label>
+      <label>Antioxidant: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider2"></label>
+      <label>Calming: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider3"></label>
+      <button id="build-blend" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
+        Build My Blend
+      </button>
+      <p id="blend-result" class="small"></p>
+    </div>
+
+    <!-- 5. Harvest Forecast Chart -->
+    <div class="card">
+      <h4><i class="fas fa-seedling"></i> Harvest Forecast</h4>
+      <canvas id="harvest-chart" class="chart"></canvas>
+    </div>
+
+    <!-- 6. Virtual Herbalist Chatbot -->
+    <button id="herbChatBtn"><i class="fas fa-comment-medical"></i></button>
+    <div class="chat-modal" id="chat-modal">
+      <div class="chat-box">
+        <header>
+          Virtual Herbalist
+          <i id="close-chat" class="fas fa-times" style="cursor:pointer;"></i>
+        </header>
+        <div id="chat-log" style="max-height:200px; overflow-y:auto; font-size:.9rem; color:var(--text); margin-bottom:.5rem;">
+          <p class="small"><em>Ask me about any herb…</em></p>
+        </div>
+        <input id="chat-input" placeholder="Type your question…" />
+      </div>
+    </div>
+
+    <!-- 7. Outcomes Monitoring Chart -->
+    <div class="card">
+      <h4><i class="fas fa-chart-line"></i> Outcome Tracking</h4>
+      <canvas id="outcome-chart" class="chart"></canvas>
+    </div>
+
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:4000/api'; 
-    
-    // Initialize and display usage stats for all modules
-    const statKeys = ['dx','form','id','pred','dose','int','chat','research','inventory','genetics'];
-    statKeys.forEach(key => {
-      if (!localStorage.getItem(key)) localStorage.setItem(key, '0');
-      const el = document.getElementById(`stat-${key}`);
-      if (el) el.textContent = localStorage.getItem(key);
+    // 1. Camera setup & identify stub
+    const video = document.getElementById('camera-stream');
+    navigator.mediaDevices.getUserMedia({ video:true }).then(s=> video.srcObject=s);
+    document.getElementById('snap-btn').onclick = ()=>{
+      // stub: pretend we ran a model
+      document.getElementById('identify-result').textContent =
+        "Identified: Echinacea purpurea (95% confidence)";
+    };
+
+    // 2. Dosage calc stub
+    document.getElementById('calc-dose').onclick = ()=>{
+      const age=+ageField.value, wt=+weight.value;
+      const mg = Math.round((wt*0.5) + (age*0.1));
+      document.getElementById('dosage-result').textContent =
+        `Recommended dose: ${mg} mg per day`;
+    };
+
+    // 3. Interaction stub
+    document.getElementById('check-interaction').onclick = ()=>{
+      const meds = document.getElementById('med-list').value.toLowerCase();
+      document.getElementById('interaction-result').textContent =
+        meds.includes('warfarin')
+          ? "⚠️ Potential interaction with Warfarin: risk of bleeding."
+          : "No known major interactions detected.";
+    };
+
+    // 4. Blend optimization stub
+    document.getElementById('build-blend').onclick = ()=>{
+      const a=+slider1.value, b=+slider2.value, c=+slider3.value;
+      document.getElementById('blend-result').textContent =
+        `Your blend: ${Math.round(a/10)}% anti‑inflam, ${Math.round(b/10)}% antioxidant, ${Math.round(c/10)}% calming.`;
+    };
+
+    // 5. Harvest forecast chart
+    new Chart(document.getElementById('harvest-chart'), {
+      type:'line',
+      data:{
+        labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        datasets:[{
+          label:'Active Compound (%)',
+          data:[12,18,24,32,38,45,50],
+          borderColor:'var(--accent)', fill:false
+        }]
+      },
+      options:{ plugins:{ legend:{ display:false }} }
     });
 
-    // Helper to bump a usage counter
-    function bumpStat(key) {
-      const current = +localStorage.getItem(key) + 1;
-      localStorage.setItem(key, current);
-      const el = document.getElementById(`stat-${key}`);
-      if (el) el.textContent = current;
-    }
-
-    // 1. AI Diagnostics
-    async function runDiagnostics() {
-      bumpStat('dx');
-      const symptoms = document.getElementById('dxInput').value;
-      const res = await fetch('http://localhost:4000/api/diagnostics', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ symptoms })
-      });
-      const { suggestion } = await res.json();
-      document.getElementById('dxResult').textContent = suggestion;
-    }
-
-    // 2. Personalized Formulations
-    async function makePersonalized() {
-      bumpStat('form');
-      const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value);
-      const age = document.getElementById('pfAge').value;
-      const weight = document.getElementById('pfWeight').value;
-      const res = await fetch('http://localhost:4000/api/formulations', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herbs, age, weight })
-      });
-      const { formula } = await res.json();
-      document.getElementById('pfResult').textContent = formula;
-    }
-
-    // 3. Ingredient Identification
-    async function identifyIngredient() {
-      bumpStat('id');
-      const fileInput = document.getElementById('ingUpload');
-      const formData = new FormData();
-      formData.append('image', fileInput.files[0]);
-      const res = await fetch('http://localhost:4000/api/identify-ingredient', {
-        method: 'POST',
-        body: formData
-      });
-      const { species, purity } = await res.json();
-      document.getElementById('ingResult').textContent =
-        `✅ Verified: ${species} (${purity}% purity).`;
-    }
-
-    // 4. Predictive Efficacy
-    async function runPrediction() {
-      bumpStat('pred');
-      const [ herb, ...condArr ] = document.getElementById('predInput').value.split(' ');
-      const condition = condArr.join(' ');
-      const res = await fetch('http://localhost:4000/api/predictive-efficacy', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herb, condition })
-      });
-      const { efficacy } = await res.json();
-      document.getElementById('predResult').textContent = efficacy;
-    }
-
-    // 5. Education Chatbot
-    const chatBox = document.getElementById('chatBox');
-    document.getElementById('sendChat').addEventListener('click', async () => {
-      const message = document.getElementById('chatInput').value.trim();
-      if (!message) return;
-      bumpStat('chat');
-      chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-      document.getElementById('chatInput').value = '';
-      // (optionally maintain full history in an array)
-      const res = await fetch('http://localhost:4000/api/chat', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ message, history: [] })
-      });
-      const { reply } = await res.json();
-      chatBox.innerHTML += `<p><strong>Vitra AI:</strong> ${reply}</p>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-    // 6. Research Engine
-    async function runResearch() {
-      bumpStat('research');
-      const query = document.getElementById('researchQuery').value;
-      const res = await fetch('http://localhost:4000/api/research', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ query })
-      });
-      const { summary } = await res.json();
-      document.getElementById('researchResults').textContent = summary;
-    }
-
-    // 7. Inventory Forecast
-    async function forecastInventory() {
-      bumpStat('inventory');
-      const herb = document.getElementById('forecastHerb').value;
-      const weeks = +document.getElementById('forecastPeriod').value;
-      const res = await fetch('http://localhost:4000/api/inventory-forecast', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herb, weeks })
-      });
-      const { forecast } = await res.json();
-      document.getElementById('inventoryResult').textContent =
-        `📈 Forecast: [${forecast.join(', ')}] (units/week)`;
-    }
-
-    // 8. Genetic-Herbal Match
-    async function runGeneticMatch() {
-      bumpStat('genetics');
-      const fileInput = document.getElementById('geneticUpload');
-      const formData = new FormData();
-      formData.append('report', fileInput.files[0]);
-      const res = await fetch('http://localhost:4000/api/genetic-match', {
-        method: 'POST',
-        body: formData
-      });
-      const { analysis } = await res.json();
-      document.getElementById('geneticResult').textContent = analysis;
-    }
-
-    // AR-powered live scan
-    async function startAR() {
-      const vid = document.getElementById('arVideo');
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        vid.srcObject = stream;
-        vid.style.display = 'block';
-        document.getElementById('ingResult').textContent = '🔍 Point camera at herb…';
-        // Integrate TensorFlow.js model here
-      } catch {
-        document.getElementById('ingResult').textContent = '⚠️ Please allow camera access.';
+    // 6. Chatbot stub
+    const chatBtn = document.getElementById('herbChatBtn'),
+          chatModal = document.getElementById('chat-modal'),
+          closeChat = document.getElementById('close-chat'),
+          chatLog = document.getElementById('chat-log'),
+          chatIn = document.getElementById('chat-input');
+    chatBtn.onclick = ()=> chatModal.style.display='flex';
+    closeChat.onclick = ()=> chatModal.style.display='none';
+    chatIn.onkeydown = e=>{
+      if(e.key==='Enter' && chatIn.value.trim()){
+        const q = chatIn.value.trim();
+        const pUser = document.createElement('p');
+        pUser.innerHTML = `<strong>You:</strong> ${q}`;
+        chatLog.append(pUser);
+        // stub response
+        const pBot = document.createElement('p');
+        pBot.innerHTML = `<strong>Herbalist:</strong> ${ q.toLowerCase().includes('insomnia')
+          ? 'Chamomile is gentle and effective for mild insomnia. Try 300 mg before bed.'
+          : 'I’m here to help! Ask me about dosage, identification, or safety.'}`;
+        chatLog.append(pBot);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        chatIn.value = '';
       }
-    }
+    };
 
-    // Existing: AI Herb Identification
-    function identifyHerb() {
-      bumpStat('id');
-      document.getElementById('identifyResult').textContent = '🏷️ Identified: Turmeric.';
-    }
-
-    // Dosage Calculator
-    async function calcDosage() {
-    bumpStat('dose');
-    const weight  = +document.getElementById('weight').value;
-    const symptom = document.getElementById('symptom').value.trim();
-    const res = await fetch(`${API_BASE}/dosage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weight, symptom })
-    });
-    const { dosage } = await res.json();
-    document.getElementById('dosageResult').textContent = dosage;
-  }
-
-
-    // Interaction Checker
-   async function checkInteraction() {
-    bumpStat('int');
-    const herbA = document.getElementById('herbA').value;
-    const herbB = document.getElementById('herbB').value;
-    const res = await fetch(`${API_BASE}/interaction`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ herbA, herbB })
-    });
-    const { interaction } = await res.json();
-    document.getElementById('interactionResult').textContent = interaction;
-  }
-
-    // Herb search filter
-    document.getElementById('searchHerb').addEventListener('input', e => {
-      const q = e.target.value.toLowerCase();
-      document.querySelectorAll('#herbTable tr').forEach(tr =>
-        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'
-      );
-    });
-
-    // Sidebar toggle
-    const sb = document.getElementById('sidebar');
-    document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
-      sb.classList.toggle('collapsed');
-    });
-    document.querySelector('.toggle-sidebar').addEventListener('click', () => {
-      sb.classList.toggle('collapsed');
-    });
-
-    // Theme toggle
-    const themeBtn = document.getElementById('themeToggle');
-    if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light');
-    themeBtn.addEventListener('click', () => {
-      document.documentElement.classList.toggle('light');
-      localStorage.setItem('theme',
-        document.documentElement.classList.contains('light') ? 'light' : 'dark'
-      );
-      themeBtn.classList.toggle('fa-sun');
-    });
-
-    // Lazy-load trending chart
-    document.addEventListener('DOMContentLoaded', () => {
-      const obs = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-          new Chart(document.getElementById('trendingChart'), {
-            type: 'bar',
-            data: {
-              labels: ['Turmeric','Ginkgo','Echinacea','Valerian','Ashwagandha'],
-              datasets: [{ data: [120,95,85,70,65], backgroundColor: 'var(--accent)' }]
-            },
-            options: { plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
-          });
-          obs.disconnect();
-        }
-      });
-      obs.observe(document.getElementById('trendingChart'));
+    // 7. Outcome tracking chart
+    new Chart(document.getElementById('outcome-chart'), {
+      type:'bar',
+      data:{
+        labels:['Week 1','Week 2','Week 3','Week 4'],
+        datasets:[{
+          label:'Symptom Relief (%)',
+          data:[20,40,65,80],
+          backgroundColor:'var(--accent)'
+        }]
+      },
+      options:{ scales:{ y:{ beginAtZero:true, max:100 }}}
     });
   </script>
-
 </body>
 </html>
