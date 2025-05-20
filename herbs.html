@@ -1,357 +1,289 @@
-    <!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="">
 <head>
-
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Vitra – Herbal Medicine AI Hub</title>
-  <!-- Fonts & Icons -->
+
+  <!-- Montserrat & FontAwesome -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Full-height flex */
-    html, body { height:100%; margin:0; }
-    body {
-      display:flex; font-family:'Montserrat',sans-serif;
-      background:#fff; color:#1E2126; overflow:hidden;
-    }
-    a { text-decoration:none; color:inherit; }
-    button { cursor:pointer; border:none; background:none; }
+  /* RESET & THEME VARIABLES */
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+  :root {
+    --accent:#8ECDF1;
+    --bg1:#161B22; /* dark bg */
+    --bg2:#1E2126; /* card bg */
+    --text:#E0E0E0;
+    --muted:rgba(224,224,224,0.6);
+    --radius:8px;
+  }
+  :root.light {
+    --bg1:#F4F4F4; --bg2:#FFFFFF; --text:#111; --muted:rgba(0,0,0,0.4);
+  }
+  html,body{height:100%;background:var(--bg1);color:var(--text);}
+  a{color:inherit;text-decoration:none;}
+  button,input,select,textarea{font:inherit;color:inherit;}
+  button{cursor:pointer;background:none;border:none;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
-    /* Palette */
-    :root {
-      --accent: #8ECDF1;
-      --bg: #FFFFFF;
-      --card: #F5F7FA;
-      --text: #1E2126;
-      --muted: rgba(30,33,38,0.6);
-    }
+  /* LAYOUT */
+  body{display:flex;overflow:hidden;}
+  #sidebar{
+    width:240px;background:var(--bg1);display:flex;flex-direction:column;
+    transition:width .3s;
+  }
+  #sidebar.collapsed{width:60px;}
+  .brand{padding:1.5rem;font-size:1.3rem;font-weight:700;color:var(--accent);}
+  .nav-links a{
+    display:flex;align-items:center;gap:.75rem;padding:.9rem 1.2rem;transition:bg .2s;
+  }
+  .nav-links a.active, .nav-links a:hover{background:var(--accent)20;}
+  .nav-links i{width:24px;text-align:center;font-size:1.2rem;color:var(--accent);}
+  .toggle-sidebar{padding:1rem;text-align:center;border-top:1px solid #29303A;cursor:pointer;}
 
-    /* Sidebar */
-    #sidebar {
-      width:220px; background:var(--bg);
-      border-right:1px solid #E2E8F0;
-      position:fixed; top:0; bottom:0; left:0;
-      display:flex; flex-direction:column; z-index:100;
-    }
-    .brand {
-      padding:1.5rem; font-size:1.4rem; font-weight:700;
-      color:var(--accent);
-    }
-    nav a {
-      display:flex; align-items:center; gap:.75rem;
-      padding:.9rem 1.2rem; color:var(--text);
-      transition:background .2s;
-    }
-    nav a.active, nav a:hover {
-      background:var(--card);
-    }
-    nav i { width:24px; text-align:center; }
+  #main{flex:1;display:flex;flex-direction:column;}
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1rem 2rem;background:var(--bg1)CC;backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:10;
+  }
+  #toggleSidebarBtn{font-size:1.4rem;cursor:pointer;}
+  .greeting h1{font-size:1.9rem;display:flex;align-items:center;gap:.5rem;}
+  .greeting p{opacity:.75;}
+  .header-right i{margin-left:1rem;font-size:1.4rem;cursor:pointer;transition:transform .2s;}
+  .header-right i:hover{transform:scale(1.2);}
+  .content{padding:1rem 2rem;overflow-y:auto;flex:1;}
 
-    /* Topbar */
-    #topbar {
-      position:fixed; top:0; left:220px; right:0; height:64px;
-      background:var(--bg); border-bottom:1px solid #E2E8F0;
-      display:flex; align-items:center; justify-content:flex-end;
-      padding:0 2rem; z-index:90;
-    }
-    #topbar a { margin-left:2rem; font-weight:500; color:var(--text); }
-    .account { font-size:1.3rem; color:var(--muted); margin-left:2rem; cursor:pointer; }
+  /* STATS CARDS */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;}
+  .stat-card{
+    background:var(--bg2);border-radius:var(--radius);padding:1rem;
+    display:flex;align-items:center;gap:1rem;transition:transform .2s,box-shadow .2s;
+  }
+  .stat-card:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+  .stat-card i{font-size:1.8rem;color:var(--accent);}
+  .details h3{font-size:1.1rem;margin-bottom:.3rem;}
+  .details p{opacity:.8;color:var(--accent);}
 
-    /* Main scrollable */
-    #main {
-      position:absolute; top:64px; bottom:0; left:220px; right:0;
-      overflow-y:auto; padding:2rem;
-    }
+  /* MODULES & CHARTS */
+  section.module{
+    background:var(--bg2);border-radius:var(--radius);
+    padding:1rem;margin-bottom:1.5rem;transition:box-shadow .2s;
+  }
+  section.module:hover{box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+  section.module h2{font-size:1.2rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+  section.module form{display:flex;flex-direction:column;gap:.5rem;}
+  section.module label{font-size:.9rem;}
+  section.module input,section.module select,section.module textarea{
+    width:100%;background:var(--bg1);border:1px solid #29303A;
+    padding:.5rem;border-radius:var(--radius);transition:border-color .2s;
+  }
+  section.module input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  section.module button{
+    background:var(--accent);color:var(--bg1);padding:.5rem 1rem;
+    border-radius:var(--radius);transition:background .2s;align-self:flex-start;
+  }
+  section.module button:hover{background:var(--accent)CC;}
+  .small{font-size:.9rem;color:var(--muted);margin-top:.5rem;}
 
-    /* Section cards */
-    .card {
-      background:var(--card); border-radius:8px; padding:1rem;
-      margin-bottom:1.5rem; transition:transform .2s;
-    }
-    .card:hover { transform:translateY(-4px); }
-    .card h4 { margin-bottom:.5rem; }
-    .small { color:var(--muted); font-size:.9rem; }
-
-    /* Hero header */
-    .hero {
-      display:flex; align-items:center; justify-content:space-between;
-      margin-bottom:2rem;
-    }
-    .hero h1 {
-      font-size:2rem; font-weight:600; margin-bottom:0.5rem;
-    }
-    .hero button {
-      background:var(--accent); color:#000;
-      padding:.75rem 1.5rem; border-radius:8px;
-      font-weight:500; transition:background .2s;
-    }
-    .hero button:hover { background:#76bde0; }
-
-    /* Section title */
-    .section-title {
-      font-size:1.4rem; font-weight:600; margin:2rem 0 1rem;
-    }
-
-    /* Grid utils */
-    .grid-2 {
-      display:grid; gap:1rem;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    }
-    .grid-3 {
-      display:grid; gap:1rem;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    }
-    canvas.chart { width:100%!important; height:160px!important; }
-
-    /* Camera widget */
-    #camera-stream {
-      width:100%; max-width:400px;
-      border-radius:8px; background:#000;
-    }
-    #snap-btn {
-      margin-top:.5rem;
-      background:var(--accent); padding:.5rem 1rem;
-      border-radius:4px; color:#000;
-    }
-
-    /* Blend builder */
-    .blend-slider {
-      width:100%; margin:0.5rem 0;
-    }
-
-    /* Chatbot */
-    #herbChatBtn {
-      position:fixed; bottom:20px; left:20px;
-      background:var(--accent); border:none; padding:1rem;
-      border-radius:50%; font-size:1.5rem; z-index:80;
-      cursor:pointer;
-    }
-    .chat-modal {
-      position:fixed; inset:0; background:rgba(0,0,0,0.5);
-      display:none; align-items:center; justify-content:center; z-index:90;
-    }
-    .chat-box {
-      background:var(--bg); padding:1rem; border-radius:8px;
-      width:90%; max-width:400px;
-    }
-    .chat-box header {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:.5rem;
-    }
-    .chat-box input {
-      width:100%; padding:.5rem; border:1px solid #E2E8F0;
-      border-radius:4px; margin-top:.5rem;
-    }
-
+  .chart-box{background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;}
+  .chart-box canvas{width:100%!important;height:180px!important;}
   </style>
 </head>
-<body>
 
+<body>
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="brand"><i class="fas fa-medkit"></i> VITRA</div>
-    <nav>
-      <a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a>
-      <a href="herbs.html" class="active"><i class="fas fa-seedling"></i>Herbs</a>
-      <a href="mental.html"><i class="fas fa-brain"></i>Mental</a>
-      <a href="diet.html"><i class="fas fa-utensils"></i>Diet</a>
-      <a href="pharmacy.html"><i class="fas fa-pills"></i>E-Pharmacy</a>
-      <a href="booking.html"><i class="fas fa-calendar-check"></i>Booking</a>
-      <a href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+    <div class="brand"><i class="fas fa-medkit"></i>Vitra</div>
+    <nav class="nav-links">
+      <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="herbs.html" class="active"><i class="fas fa-seedling"></i><span>Herbal AI</span></a>
+      <a href="mental.html"><i class="fas fa-brain"></i><span>Mental</span></a>
+      <a href="diet.html"><i class="fas fa-utensils"></i><span>Diet</span></a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>E-Pharmacy</span></a>
+      <a href="booking.html"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
+      <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
     </nav>
+    <div class="toggle-sidebar"><i class="fas fa-arrow-circle-left"></i></div>
   </aside>
 
-  <!-- TOPBAR -->
-  <div id="topbar">
-    <a href="services.html">Services</a>
-    <a href="profile.html">Profile</a>
-    <a href="#">Account</a>
-    <i class="fas fa-user-circle account"></i>
-  </div>
-
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <div id="main">
-
-    <!-- Hero -->
-    <div class="hero">
-      <div>
-        <h1>Herbal Medicine</h1>
-        <p class="small">AI‑powered herb identification, formulation & safety</p>
-      </div>
-      <img src="doctor.png" alt="Herbal illustration" style="height:100px; border-radius:8px;">
-    </div>
-
-    <!-- 1. Snap & Identify -->
-    <div class="card">
-      <h4><i class="fas fa-camera"></i> Snap & Identify</h4>
-      <video id="camera-stream" autoplay></video><br>
-      <button id="snap-btn"><i class="fas fa-camera-retro"></i> Capture</button>
-      <p id="identify-result" class="small"></p>
-    </div>
-
-    <!-- 2. Phytochemical Profiling & Dosage -->
-    <div class="card">
-      <h4><i class="fas fa-flask"></i> Phytochemical Profiling & Dosage</h4>
-      <label>Age: <input type="number" id="age" min="0" max="120" value="30"></label><br>
-      <label>Weight (kg): <input type="number" id="weight" min="30" max="200" value="70"></label><br>
-      <label>Genetics Profile:
-        <select id="genetics">
-          <option>Standard</option>
-          <option>Fast Metabolizer</option>
-          <option>Slow Metabolizer</option>
-        </select>
-      </label><br>
-      <button id="calc-dose" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
-        Calculate Dosage
-      </button>
-      <p id="dosage-result" class="small"></p>
-    </div>
-
-    <!-- 3. Interaction Prediction -->
-    <div class="card">
-      <h4><i class="fas fa-exclamation-triangle"></i> Herb‑Drug Interaction</h4>
-      <label>Existing Medications:<br>
-        <input type="text" id="med-list" placeholder="e.g. Warfarin, Aspirin" style="width:100%;padding:.5rem;border:1px solid #E2E8F0;border-radius:4px;">
-      </label><br>
-      <button id="check-interaction" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
-        Check Safety
-      </button>
-      <p id="interaction-result" class="small"></p>
-    </div>
-
-    <!-- 4. Blend Builder -->
-    <div class="card">
-      <h4><i class="fas fa-cubes"></i> Blend Optimization</h4>
-      <label>Anti‑Inflammatory: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider1"></label>
-      <label>Antioxidant: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider2"></label>
-      <label>Calming: <input type="range" min="0" max="100" value="50" class="blend-slider" id="slider3"></label>
-      <button id="build-blend" style="margin-top:.5rem; background:var(--accent);padding:.5rem 1rem;border-radius:4px;color:#000;">
-        Build My Blend
-      </button>
-      <p id="blend-result" class="small"></p>
-    </div>
-
-    <!-- 5. Harvest Forecast Chart -->
-    <div class="card">
-      <h4><i class="fas fa-seedling"></i> Harvest Forecast</h4>
-      <canvas id="harvest-chart" class="chart"></canvas>
-    </div>
-
-    <!-- 6. Virtual Herbalist Chatbot -->
-    <button id="herbChatBtn"><i class="fas fa-comment-medical"></i></button>
-    <div class="chat-modal" id="chat-modal">
-      <div class="chat-box">
-        <header>
-          Virtual Herbalist
-          <i id="close-chat" class="fas fa-times" style="cursor:pointer;"></i>
-        </header>
-        <div id="chat-log" style="max-height:200px; overflow-y:auto; font-size:.9rem; color:var(--text); margin-bottom:.5rem;">
-          <p class="small"><em>Ask me about any herb…</em></p>
+    <header>
+      <div class="header-left">
+        <i id="toggleSidebarBtn" class="fas fa-bars"></i>
+        <div class="greeting">
+          <h1><i class="fas fa-seedling"></i> Herbal AI Hub</h1>
+          <p>Powerful AI features for herbal medicine</p>
         </div>
-        <input id="chat-input" placeholder="Type your question…" />
+      </div>
+      <div class="header-right">
+        <i class="fas fa-bell"></i>
+        <i class="fas fa-user-circle"></i>
+        <i id="themeToggle" class="fas fa-moon" title="Toggle theme"></i>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat-card"><i class="fas fa-camera"></i><div class="details"><h3>Identifications</h3><p id="stat-id">0</p></div></div>
+        <div class="stat-card"><i class="fas fa-flask"></i><div class="details"><h3>Doses</h3><p id="stat-dose">0</p></div></div>
+        <div class="stat-card"><i class="fas fa-exchange-alt"></i><div class="details"><h3>Interactions</h3><p id="stat-int">0</p></div></div>
+        <div class="stat-card"><i class="fas fa-cubes"></i><div class="details"><h3>Blends</h3><p id="stat-blend">0</p></div></div>
+        <div class="stat-card"><i class="fas fa-chart-line"></i><div class="details"><h3>Harvest</h3><p id="stat-harvest">0</p></div></div>
+        <div class="stat-card"><i class="fas fa-comment-medical"></i><div class="details"><h3>Chats</h3><p id="stat-chat">0</p></div></div>
+      </div>
+
+      <!-- 1. Snap & Identify -->
+      <section class="module">
+        <h2><i class="fas fa-camera"></i> Snap & Identify</h2>
+        <video id="camera-stream" autoplay style="width:100%;border-radius:var(--radius);background:#000;"></video>
+        <button id="snap-btn"><i class="fas fa-camera-retro"></i> Capture</button>
+        <p id="identifyResult" class="small">No image captured yet.</p>
+      </section>
+
+      <!-- 2. Dosage Calculator -->
+      <section class="module">
+        <h2><i class="fas fa-calculator"></i> Dosage Calculator</h2>
+        <form onsubmit="calcDosage();return false;">
+          <label for="weight">Weight (kg)</label>
+          <input type="number" id="weight" min="0" required>
+          <label for="symptom">Symptom</label>
+          <input type="text" id="symptom" required>
+          <button type="submit"><i class="fas fa-check"></i> Calculate</button>
+        </form>
+        <p id="dosageResult" class="small"></p>
+      </section>
+
+      <!-- 3. Interaction Checker -->
+      <section class="module">
+        <h2><i class="fas fa-exchange-alt"></i> Interaction Checker</h2>
+        <form onsubmit="checkInteraction();return false;">
+          <label for="herbA">Herb A</label>
+          <select id="herbA"><option>Ginkgo</option><option>Turmeric</option></select>
+          <label for="herbB">Herb B</label>
+          <select id="herbB"><option>Ginkgo</option><option>St. John’s Wort</option></select>
+          <button type="submit"><i class="fas fa-search"></i> Check</button>
+        </form>
+        <p id="interactionResult" class="small"></p>
+      </section>
+
+      <!-- 4. Blend Optimizer -->
+      <section class="module">
+        <h2><i class="fas fa-cubes"></i> Blend Optimization</h2>
+        <label>Anti‑Inflammatory <input type="range" id="slider1" value="50" class="blend-slider"></label>
+        <label>Antioxidant <input type="range" id="slider2" value="50" class="blend-slider"></label>
+        <label>Calming <input type="range" id="slider3" value="50" class="blend-slider"></label>
+        <button onclick="buildBlend();"><i class="fas fa-magic"></i> Build Blend</button>
+        <p id="blendResult" class="small"></p>
+      </section>
+
+      <!-- 5. Harvest Forecast -->
+      <div class="chart-box">
+        <h2><i class="fas fa-chart-line"></i> Harvest Forecast</h2>
+        <canvas id="harvestChart"></canvas>
+      </div>
+
+      <!-- 6. Virtual Herbalist Chatbot -->
+      <button id="chatToggle" style="position:fixed;bottom:20px;right:80px;background:var(--accent);border-radius:50%;padding:1rem;color:#000;z-index:20;">
+        <i class="fas fa-comment-medical"></i>
+      </button>
+      <div id="chatModal" class="chat-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:30;">
+        <div class="module" style="max-width:400px;width:90%;">
+          <h2><i class="fas fa-comment-medical"></i> Virtual Herbalist</h2>
+          <div id="chatBox" style="max-height:200px;overflow-y:auto;background:var(--bg1);padding:.5rem;border-radius:var(--radius);"></div>
+          <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+            <input id="chatInput" placeholder="Ask a question…" style="flex:1;padding:.5rem;border:1px solid #29303A;border-radius:var(--radius);background:var(--bg1);color:inherit;">
+            <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
+          </div>
+          <button onclick="document.getElementById('chatModal').style.display='none';" style="margin-top:.5rem;background:var(--accent);padding:.5rem 1rem;border-radius:var(--radius);">Close</button>
+        </div>
+      </div>
+
+      <!-- 7. Outcome Tracking -->
+      <div class="chart-box">
+        <h2><i class="fas fa-chart-bar"></i> Outcome Tracking</h2>
+        <canvas id="outcomeChart"></canvas>
       </div>
     </div>
-
-    <!-- 7. Outcomes Monitoring Chart -->
-    <div class="card">
-      <h4><i class="fas fa-chart-line"></i> Outcome Tracking</h4>
-      <canvas id="outcome-chart" class="chart"></canvas>
-    </div>
-
   </div>
 
   <script>
-    // 1. Camera setup & identify stub
-    const video = document.getElementById('camera-stream');
-    navigator.mediaDevices.getUserMedia({ video:true }).then(s=> video.srcObject=s);
-    document.getElementById('snap-btn').onclick = ()=>{
-      // stub: pretend we ran a model
-      document.getElementById('identify-result').textContent =
-        "Identified: Echinacea purpurea (95% confidence)";
-    };
+  const API_BASE='http://localhost:4000/api';
+  function bumpStat(key){
+    const el=document.getElementById('stat-'+key);
+    if(!el) return;
+    const v=+el.textContent+1; el.textContent=v;
+  }
+  // 1. Snap & Identify
+  navigator.mediaDevices.getUserMedia({video:true}).then(s=>document.getElementById('camera-stream').srcObject=s);
+  document.getElementById('snap-btn').onclick=()=>{
+    bumpStat('id');
+    document.getElementById('identifyResult').textContent='🔍 Identified: Echinacea purpurea (95%)';
+  };
 
-    // 2. Dosage calc stub
-    document.getElementById('calc-dose').onclick = ()=>{
-      const age=+ageField.value, wt=+weight.value;
-      const mg = Math.round((wt*0.5) + (age*0.1));
-      document.getElementById('dosage-result').textContent =
-        `Recommended dose: ${mg} mg per day`;
-    };
+  // 2. Dosage
+  document.querySelector('section:nth-of-type(2) form').onsubmit=e=>{
+    e.preventDefault(); bumpStat('dose');
+    const w=+document.getElementById('weight').value,s=document.getElementById('symptom').value;
+    document.getElementById('dosageResult').textContent=`Dose for ${s}: ${Math.round(w*0.5)} mg/day`;
+  };
 
-    // 3. Interaction stub
-    document.getElementById('check-interaction').onclick = ()=>{
-      const meds = document.getElementById('med-list').value.toLowerCase();
-      document.getElementById('interaction-result').textContent =
-        meds.includes('warfarin')
-          ? "⚠️ Potential interaction with Warfarin: risk of bleeding."
-          : "No known major interactions detected.";
-    };
+  // 3. Interaction
+  document.querySelector('section:nth-of-type(3) form').onsubmit=e=>{
+    e.preventDefault(); bumpStat('int');
+    const a=document.getElementById('herbA').value, b=document.getElementById('herbB').value;
+    document.getElementById('interactionResult').textContent = a==='Turmeric'&&b==='St. John’s Wort'
+      ? '⚠️ Interaction risk detected!' : 'No major interaction.';
+  };
 
-    // 4. Blend optimization stub
-    document.getElementById('build-blend').onclick = ()=>{
-      const a=+slider1.value, b=+slider2.value, c=+slider3.value;
-      document.getElementById('blend-result').textContent =
-        `Your blend: ${Math.round(a/10)}% anti‑inflam, ${Math.round(b/10)}% antioxidant, ${Math.round(c/10)}% calming.`;
-    };
+  // 4. Blend
+  function buildBlend(){
+    bumpStat('blend');
+    const a=+slider1.value,b=+slider2.value,c=+slider3.value;
+    document.getElementById('blendResult').textContent=`Blend: ${a}% anti‑inflam, ${b}% anti‑oxid, ${c}% calming.`;
+  }
 
-    // 5. Harvest forecast chart
-    new Chart(document.getElementById('harvest-chart'), {
-      type:'line',
-      data:{
-        labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
-        datasets:[{
-          label:'Active Compound (%)',
-          data:[12,18,24,32,38,45,50],
-          borderColor:'var(--accent)', fill:false
-        }]
-      },
-      options:{ plugins:{ legend:{ display:false }} }
-    });
+  // 5. Harvest Chart
+  new Chart(document.getElementById('harvestChart'),{
+    type:'line',
+    data:{labels:['Jan','Mar','May','Jul','Sep','Nov'],datasets:[{data:[10,25,40,55,65,75],borderColor:'var(--accent)',fill:false}]},
+    options:{plugins:{legend:{display:false}}}
+  }); bumpStat('harvest');
 
-    // 6. Chatbot stub
-    const chatBtn = document.getElementById('herbChatBtn'),
-          chatModal = document.getElementById('chat-modal'),
-          closeChat = document.getElementById('close-chat'),
-          chatLog = document.getElementById('chat-log'),
-          chatIn = document.getElementById('chat-input');
-    chatBtn.onclick = ()=> chatModal.style.display='flex';
-    closeChat.onclick = ()=> chatModal.style.display='none';
-    chatIn.onkeydown = e=>{
-      if(e.key==='Enter' && chatIn.value.trim()){
-        const q = chatIn.value.trim();
-        const pUser = document.createElement('p');
-        pUser.innerHTML = `<strong>You:</strong> ${q}`;
-        chatLog.append(pUser);
-        // stub response
-        const pBot = document.createElement('p');
-        pBot.innerHTML = `<strong>Herbalist:</strong> ${ q.toLowerCase().includes('insomnia')
-          ? 'Chamomile is gentle and effective for mild insomnia. Try 300 mg before bed.'
-          : 'I’m here to help! Ask me about dosage, identification, or safety.'}`;
-        chatLog.append(pBot);
-        chatLog.scrollTop = chatLog.scrollHeight;
-        chatIn.value = '';
-      }
-    };
+  // 6. Chatbot
+  document.getElementById('chatToggle').onclick=()=>document.getElementById('chatModal').style.display='flex';
+  document.getElementById('sendChat').onclick=async()=>{
+    const inp=document.getElementById('chatInput'),txt=inp.value.trim(); if(!txt) return;
+    bumpStat('chat');
+    chatBox.innerHTML+=`<p><strong>You:</strong> ${txt}</p>`;
+    inp.value='';
+    // stub reply
+    chatBox.innerHTML+=`<p><strong>Herbalist:</strong> Chamomile helps insomnia.</p>`;
+    chatBox.scrollTop=chatBox.scrollHeight;
+  };
 
-    // 7. Outcome tracking chart
-    new Chart(document.getElementById('outcome-chart'), {
-      type:'bar',
-      data:{
-        labels:['Week 1','Week 2','Week 3','Week 4'],
-        datasets:[{
-          label:'Symptom Relief (%)',
-          data:[20,40,65,80],
-          backgroundColor:'var(--accent)'
-        }]
-      },
-      options:{ scales:{ y:{ beginAtZero:true, max:100 }}}
-    });
+  // 7. Outcome Chart
+  new Chart(document.getElementById('outcomeChart'),{
+    type:'bar',
+    data:{labels:['Wk1','Wk2','Wk3','Wk4'],datasets:[{data:[20,40,60,80],backgroundColor:'var(--accent)'}]},
+    options:{scales:{y:{beginAtZero:true,max:100}}}
+  }); bumpStat('outcome');
+
+  // THEME & SIDEBAR TOGGLE
+  document.getElementById('themeToggle').onclick=()=>{
+    document.documentElement.classList.toggle('light');
+    document.getElementById('themeToggle').classList.toggle('fa-sun');
+  };
+  [ 'toggleSidebarBtn', ...document.getElementsByClassName('toggle-sidebar') ].forEach(btn=>{
+    if(btn.addEventListener) btn.addEventListener('click',()=>sidebar.classList.toggle('collapsed'));
+  });
   </script>
 </body>
 </html>
