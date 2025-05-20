@@ -8,143 +8,349 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     /* ===== Reset & Base ===== */
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
-    body { display:flex; min-height:100vh; background:#0D1117; color:#E0E0E0; overflow:hidden; }
-    a { color:inherit; text-decoration:none; }
-    button { cursor:pointer; background:none; border:none; color:inherit; }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+    body {
+      display: flex; min-height: 100vh;
+      background: #FFFFFF; color: #1E2126;
+      overflow: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { background: none; border: none; cursor: pointer; }
 
-    /* ===== Colors & Accents ===== */
+    /* ===== Color Palette ===== */
     :root {
       --accent: #8ECDF1;
-      --dark:    #1E2126;
-      --dark2:   #161B22;
-      --muted:   rgba(224,224,224,0.6);
+      --bg: #FFFFFF;
+      --card: #F5F7FA;
+      --text: #1E2126;
+      --muted: rgba(30,33,38,0.6);
     }
 
     /* ===== Sidebar ===== */
     #sidebar {
-      width:240px; background:var(--dark2); position:sticky; top:0; height:100vh;
-      display:flex; flex-direction:column;
+      width: 240px;
+      background: var(--bg);
+      border-right: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
     }
-    .brand { padding:1.5rem; font-size:1.3rem; font-weight:700; color:var(--accent); }
+    .brand {
+      padding: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
     nav a {
-      display:flex; align-items:center; gap:.75rem; padding:.9rem 1.2rem;
-      transition:background .2s;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1.2rem;
+      color: var(--text);
+      transition: background .2s;
     }
-    nav a.active, nav a:hover { background:rgba(142,205,241,0.1); }
-    nav i { width:24px; text-align:center; }
+    nav a.active, nav a:hover {
+      background: var(--card);
+    }
+    nav i { width: 24px; text-align: center; }
 
     /* ===== Header ===== */
     header {
-      position:sticky; top:0; z-index:10; background:rgba(13,17,23,0.95);
-      display:flex; justify-content:space-between; align-items:center;
-      padding:1rem 1.5rem; backdrop-filter:blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
     }
-    .greet { display:flex; align-items:center; gap:.5rem; }
-    .greet h3 { font-weight:400; }
+    .greet {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+    #notifIcon {
+      position: relative;
+      font-size: 1.25rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    #notifMenu {
+      display: none;
+      position: absolute;
+      top: 140%;
+      right: 0;
+      width: 300px;
+      background: var(--bg);
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 20;
+    }
+    #notifMenu header {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      padding: .5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #notifMenu .item {
+      padding: .6rem 1rem;
+      font-size: .9rem;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text);
+    }
+    #notifMenu .item + .item {
+      border-top: 1px solid #E2E8F0;
+    }
+    #notifMenu footer {
+      text-align: center;
+      padding: .5rem;
+      background: #F9FAFB;
+    }
 
     /* ===== Main & Content ===== */
-    #main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-    .content { flex:1; overflow-y:auto; padding:1rem 1.5rem; }
+    #main {
+      flex: 1; display: flex; flex-direction: column; background: var(--bg);
+    }
+    .content {
+      flex: 1; overflow-y: auto; padding: 2rem;
+    }
 
-    /* ===== Grid & Cards ===== */
-    .grid { display:grid; gap:1rem; }
-    .grid-3 { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
-    .grid-2 { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    /* ===== AI Herb Search ===== */
     .card {
-      background:var(--dark); border-radius:8px; padding:1rem; position:relative;
-      transition:transform .2s;
+      background: var(--card);
+      border-radius: 8px;
+      padding: 1rem;
+      position: relative;
+      transition: transform .2s;
     }
-    .card:hover { transform:translateY(-4px); }
-    .card h4 { margin-bottom:.5rem; font-size:1rem; }
-    .small { font-size:.9rem; color:var(--muted); }
-
-    /* ===== Charts ===== */
-    .chart { width:100%; height:160px!important; }
-
-    /* ===== Notifications ===== */
-    #notifIcon { font-size:1.4rem; cursor:pointer; position:relative; }
-    #notifMenu {
-      position:absolute; top:calc(100% + 6px); right:0; width:300px;
-      background:var(--dark); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.3);
-      display:none; overflow:hidden; z-index:10;
+    .card:hover {
+      transform: translateY(-4px);
     }
-    #notifMenu header { background:var(--accent); padding:.5rem 1rem; font-weight:600; color:#000; display:flex; justify-content:space-between; }
-    #notifMenu .item { padding:.6rem 1rem; display:flex; justify-content:space-between; font-size:.9rem; }
-    #notifMenu .item + .item { border-top:1px solid #29303A; }
-    #notifMenu footer { text-align:center; padding:.5rem; background:rgba(224,224,224,0.05); }
-
-    /* ===== Toolbar ===== */
-    .toolbar {
-      position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:12px;
+    .card h4 {
+      font-size: 1rem;
+      margin-bottom: .5rem;
     }
-    .toolbar button {
-      width:50px; height:50px; border-radius:50%; background:var(--accent);
-      display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    .small {
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    #herbQ {
+      flex: 1;
+      padding: .5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    #askHerb {
+      padding: .5rem 1rem;
+      background: var(--accent);
+      border-radius: 4px;
+      color: #000;
+      margin-left: .5rem;
     }
 
     /* ===== Widgets ===== */
-    #widgets { margin:1rem 0; }
-    .widget { cursor:pointer; }
+    #widgets {
+      margin: 1.5rem 0;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    }
+    .widget h4 {
+      margin-bottom: .5rem;
+      font-size: 1rem;
+    }
+    .slider-container {
+      display: flex; align-items: center; gap: .5rem;
+    }
+    input[type="range"] { width: 100%; }
+    input[type="number"] {
+      width: 60px;
+      padding: .25rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      text-align: center;
+    }
 
-    /* ===== Inputs & Sliders ===== */
-    .slider-container { display:flex; align-items:center; gap:.5rem; }
-    .slider-container input { width:100%; }
+    /* ===== Charts ===== */
+    .grid-2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
+    canvas.chart { width: 100% !important; height: 160px !important; }
+
+    /* ===== Medication List ===== */
+    .meds ul {
+      list-style: none;
+      margin-top: .5rem;
+      color: var(--text);
+    }
+    .meds li {
+      margin-bottom: .25rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .meds button {
+      margin-top: .5rem;
+      background: var(--accent);
+      color: #000;
+      padding: .5rem 1rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
 
     /* ===== Calendar ===== */
-    .calendar { width:100%; border-collapse:collapse; margin-top:.5rem; }
-    .calendar th, .calendar td {
-      width:14.28%; padding:.5rem; text-align:center; cursor:pointer; font-size:.85rem;
+    .calendar {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: .5rem;
     }
-    .calendar th { background:rgba(142,205,241,0.1); }
-    .calendar .today { background:var(--accent); border-radius:4px; }
+    .calendar th, .calendar td {
+      width: 14.28%;
+      padding: .5rem;
+      text-align: center;
+      font-size: .85rem;
+      cursor: pointer;
+    }
+    .calendar th {
+      background: var(--card);
+    }
+    .calendar .today {
+      background: var(--accent);
+      color: #000;
+      border-radius: 4px;
+    }
 
-    /* ===== Modal ===== */
+    /* ===== Appointments & Doses ===== */
+    .list-small {
+      list-style: none;
+      margin-top: .5rem;
+      font-size: .9rem;
+      color: var(--text);
+    }
+    .list-small li {
+      margin-bottom: .25rem;
+    }
+
+    /* ===== News & Tips ===== */
+    .news, .tips {
+      font-size: .9rem;
+      color: var(--text);
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: .5rem;
+    }
+    .tips ul {
+      list-style: disc inside;
+    }
+
+    /* ===== Toolbar ===== */
+    .toolbar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 30;
+    }
+    .toolbar button {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #000;
+    }
+
+    /* ===== Chat Modal ===== */
     .modal-backdrop {
-      position:fixed; inset:0; background:rgba(0,0,0,0.7);
-      display:none; align-items:center; justify-content:center; z-index:20;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
     }
     .modal {
-      background:var(--dark); padding:1rem; border-radius:8px; width:90%; max-width:400px;
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+      width: 90%; max-width: 400px;
     }
-    .modal header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
-    .modal header i { cursor:pointer; }
+    .modal header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: .5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .modal input {
+      width: 100%;
+      padding: .5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      margin-top: .5rem;
+    }
 
     /* ===== Responsive ===== */
     @media(max-width:768px) {
-      #sidebar { position:fixed; left:-240px; transition:left .3s; }
-      #sidebar.show { left:0; }
-      .toolbar { right:10px; }
+      #sidebar { position: fixed; left: -240px; transition: left .3s; }
+      #sidebar.show   { left: 0; }
+      .toolbar { right: 10px; bottom: 10px; }
     }
   </style>
 </head>
 <body>
+
   <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="brand"><i class="fas fa-medkit"></i> Vitra</div>
+    <div class="brand"><i class="fas fa-prescription-bottle-alt"></i> VITRA</div>
     <nav>
       <a href="dashboard.html" class="active"><i class="fas fa-home"></i>Dashboard</a>
-      <a href="herbs.html"><i class="fas fa-seedling"></i>Herbs</a>
-      <a href="mental.html"><i class="fas fa-brain"></i>Mental</a>
-      <a href="diet.html"><i class="fas fa-utensils"></i>Diet</a>
-      <a href="pharmacy.html"><i class="fas fa-pills"></i>E-Pharmacy</a>
       <a href="booking.html"><i class="fas fa-calendar-check"></i>Booking</a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i>E-Pharmacy</a>
+      <a href="diet.html"><i class="fas fa-utensils"></i>Dietetics</a>
+      <a href="mental.html"><i class="fas fa-brain"></i>Mental Health</a>
+      <a href="herbs.html"><i class="fas fa-seedling"></i>Herbal Medicine</a>
       <a href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+      <a href="settings.html"><i class="fas fa-cog"></i>Settings</a>
     </nav>
   </aside>
 
   <!-- MAIN -->
   <div id="main">
+    <!-- HEADER -->
     <header>
-      <div class="greet"><i class="fas fa-smile-wink"></i><h3>Hi Alex!</h3></div>
-      <div style="position:relative;">
+      <div class="greet"><i class="fas fa-smile"></i> Hello, Sarah</div>
+      <div style="position: relative;">
         <i id="notifIcon" class="fas fa-bell"></i>
         <div id="notifMenu">
-          <header>Notifications <i id="closeNotif" class="fas fa-times"></i></header>
+          <header>Notifications <i id="closeNotif" class="fas fa-times" style="cursor:pointer;"></i></header>
           <div class="item">Lab: Cholesterol ↑ <i class="fas fa-ellipsis-h"></i></div>
           <div class="item">Appt: Dr. Taylor @11AM <i class="fas fa-ellipsis-h"></i></div>
           <footer><button id="viewAllNotifs">View All</button></footer>
@@ -152,32 +358,39 @@
       </div>
     </header>
 
+    <!-- CONTENT -->
     <div class="content">
-      <!-- AI Search -->
+      <!-- Herb AI Search -->
       <div class="card">
-        <h4><i class="fas fa-robot"></i>Herb AI Search</h4>
+        <h4><i class="fas fa-robot"></i> Herb AI Search</h4>
         <div style="display:flex; gap:.5rem; margin-top:.5rem;">
-          <input id="herbQ" placeholder="Ask about a herb…" style="flex:1; padding:.5rem; border-radius:4px; border:1px solid #29303A; background:var(--dark2);"/>
-          <button id="askHerb" style="padding:.5rem 1rem; background:var(--accent); border-radius:4px;"><i class="fas fa-question"></i></button>
+          <input id="herbQ" placeholder="Ask about a herb…"/>
+          <button id="askHerb"><i class="fas fa-question"></i></button>
         </div>
         <p id="herbA" class="small" style="margin-top:.5rem;"></p>
       </div>
 
       <!-- Widgets -->
-      <div id="widgets" class="grid grid-3">
+      <div id="widgets">
         <div class="card widget" id="moodWidget">
-          <h4><i class="fas fa-smile-beam"></i> Mood</h4>
-          <div class="slider-container"><span>😞</span><input type="range" min="1" max="5" value="3" id="moodRange"/><span>😁</span></div>
+          <h4><i class="fas fa-smile-beam"></i> Mood Tracking</h4>
+          <div class="slider-container">
+            <span>😞</span>
+            <input type="range" min="1" max="5" value="3" id="moodRange"/>
+            <span>😁</span>
+          </div>
           <p class="small">Current: <span id="moodVal">3</span>/5</p>
         </div>
         <div class="card widget">
-          <h4><i class="fas fa-tint"></i> Water</h4>
-          <div class="slider-container"><input type="number" id="waterIn" min="0" max="10" value="5" style="width:50px;"/><span>glasses</span></div>
+          <h4><i class="fas fa-tint"></i> Water Intake</h4>
+          <div class="slider-container">
+            <input type="number" id="waterIn" min="0" max="10" value="5"/> <span>glasses</span>
+          </div>
           <p class="small">Goal: 8</p>
         </div>
         <div class="card widget">
           <h4><i class="fas fa-walking"></i> Steps</h4>
-          <p><strong id="stepCount">8,421</strong> steps</p>
+          <p><strong id="stepCount">8421</strong> steps</p>
         </div>
         <div class="card widget">
           <h4><i class="fas fa-bed"></i> Sleep</h4>
@@ -186,7 +399,7 @@
       </div>
 
       <!-- Charts -->
-      <div class="grid grid-2">
+      <div class="grid-2">
         <div class="card">
           <h4><i class="fas fa-utensils"></i> Nutrition</h4>
           <canvas id="chartNut" class="chart"></canvas>
@@ -201,22 +414,24 @@
         <canvas id="chartAct" class="chart"></canvas>
       </div>
 
-      <!-- Medication -->
-      <div class="card" style="margin-top:1rem;">
-        <h4><i class="fas fa-pills"></i> Meds</h4>
-        <ul style="list-style:none; margin-top:.5rem;">
-          <li><input type="checkbox" checked> Metformin 500 mg – 08:00</li>
-          <li><input type="checkbox"> Vitamin D – 20:00</li>
+      <!-- Medications -->
+      <div class="card meds" style="margin-top:1rem;">
+        <h4><i class="fas fa-pills"></i> Medications</h4>
+        <ul>
+          <li><input type="checkbox" checked/> Metformin 500 mg – 08:00</li>
+          <li><input type="checkbox"/> Vitamin D – 20:00</li>
         </ul>
-        <button id="refillAll" style="margin-top:.5rem; padding:.5rem 1rem; background:var(--accent); border-radius:4px;">Refill All</button>
+        <button id="refillAll"><i class="fas fa-sync-alt" style="margin-right:.5rem;"></i>Refill All</button>
       </div>
 
-      <!-- Calendar + Appts -->
-      <div class="grid grid-2" style="margin-top:1rem;">
+      <!-- Calendar & Appointments -->
+      <div class="grid-2" style="margin-top:1rem;">
         <div class="card">
           <h4><i class="fas fa-calendar-alt"></i> Calendar</h4>
           <table class="calendar">
-            <thead><tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr></thead>
+            <thead>
+              <tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr>
+            </thead>
             <tbody>
               <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
               <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
@@ -229,14 +444,14 @@
         <div>
           <div class="card">
             <h4><i class="fas fa-user-md"></i> Appointments</h4>
-            <ul class="small" style="list-style:none; margin-top:.5rem;">
+            <ul class="list-small">
               <li>Dr. Taylor – May 18 @ 11AM</li>
               <li>Telehealth – May 20 @ 10AM</li>
             </ul>
           </div>
           <div class="card" style="margin-top:1rem;">
             <h4><i class="fas fa-syringe"></i> Doses</h4>
-            <ul class="small" style="list-style:none; margin-top:.5rem;">
+            <ul class="list-small">
               <li>Vitamin C – May 17 @ 08:00</li>
               <li>Omega-3 – May 17 @ 20:00</li>
             </ul>
@@ -244,11 +459,11 @@
         </div>
       </div>
 
-      <!-- News & Tips -->
-      <div class="grid grid-2" style="margin-top:1rem;">
+      <!-- News & Quick Tips -->
+      <div class="grid-2" style="margin-top:1rem;">
         <div class="card">
           <h4><i class="fas fa-newspaper"></i> News</h4>
-          <div style="max-height:150px; overflow-y:auto; font-size:.9rem; margin-top:.5rem; color:var(--muted);">
+          <div class="news">
             <p>• Turmeric’s anti-inflammatory power</p>
             <p>• 5 tips to improve sleep tonight</p>
             <p>• Guided mindful breathing</p>
@@ -257,17 +472,19 @@
         </div>
         <div class="card">
           <h4><i class="fas fa-lightbulb"></i> Quick Tips</h4>
-          <ul style="font-size:.9rem; margin-top:.5rem; color:var(--muted);">
-            <li>Drink a glass of water first thing.</li>
-            <li>Stand and stretch every hour.</li>
-            <li>Take 5-minute meditation breaks.</li>
-          </ul>
+          <div class="tips">
+            <ul>
+              <li>Drink a glass of water first thing.</li>
+              <li>Stand and stretch every hour.</li>
+              <li>Take 5-minute meditation breaks.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toolbar -->
+  <!-- TOOLBAR -->
   <div class="toolbar">
     <button id="btnBook"><i class="fas fa-calendar-plus"></i></button>
     <button id="btnRefill"><i class="fas fa-prescription-bottle-alt"></i></button>
@@ -275,70 +492,98 @@
     <button id="btnSOS"><i class="fas fa-phone"></i></button>
   </div>
 
-  <!-- Chat Modal -->
+  <!-- CHAT MODAL -->
   <div id="chatModal" class="modal-backdrop">
     <div class="modal">
       <header>Help Chat <i id="closeChat" class="fas fa-times"></i></header>
       <p>Hi! How can I help you today?</p>
-      <input id="chatInput" placeholder="Type your question…" style="width:100%;padding:.5rem;border-radius:4px;border:1px solid #29303A;background:var(--dark2);margin-top:.5rem;"/>
+      <input id="chatInput" placeholder="Type your question…"/>
     </div>
   </div>
 
   <script>
-    // Notifications
-    const bell = document.getElementById('notifIcon'),
-          menu = document.getElementById('notifMenu'),
-          closeN = document.getElementById('closeNotif');
-    bell.onclick = e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; };
-    closeN.onclick = ()=> menu.style.display='none';
-    document.addEventListener('click', ()=> menu.style.display='none');
+    // Notifications Toggle
+    const bell = document.getElementById('notifIcon');
+    const menu = document.getElementById('notifMenu');
+    const closeN = document.getElementById('closeNotif');
+    bell.onclick = e => {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    };
+    closeN.onclick = () => menu.style.display = 'none';
+    document.addEventListener('click', () => menu.style.display = 'none');
 
-    // Herb AI Search
-    document.getElementById('askHerb').onclick = ()=>{
+    // Herb AI Search Logic
+    document.getElementById('askHerb').onclick = () => {
       const q = document.getElementById('herbQ').value.toLowerCase();
       const out = document.getElementById('herbA');
-      if(!q) return out.textContent = 'Please ask about a herb.';
-      if(q.includes('turmeric')) out.textContent = 'Turmeric reduces inflammation & supports joints.';
-      else if(q.includes('gingko')) out.textContent = 'Ginkgo improves circulation & cognition.';
+      if (!q) return out.textContent = 'Please ask about a herb.';
+      if (q.includes('turmeric')) out.textContent = 'Turmeric reduces inflammation & supports joints.';
+      else if (q.includes('gingko')) out.textContent = 'Ginkgo improves circulation & cognition.';
       else out.textContent = 'Sorry, I don’t have info on that.';
     };
 
-    // Mood slider
-    const moodR = document.getElementById('moodRange'), moodV = document.getElementById('moodVal');
-    moodR.oninput = ()=> moodV.textContent = moodR.value;
+    // Mood Slider
+    const moodR = document.getElementById('moodRange');
+    const moodV = document.getElementById('moodVal');
+    moodV.textContent = moodR.value;
+    moodR.oninput = () => moodV.textContent = moodR.value;
 
-    // Water intake
-    const waterIn = document.getElementById('waterIn');
-    waterIn.onchange = ()=> {
-      const w = waterIn.value;
-      alert(`Logged ${w} glasses of water.`);
+    // Water Intake
+    document.getElementById('waterIn').onchange = () => {
+      alert(`Logged ${document.getElementById('waterIn').value} glasses of water.`);
     };
 
-    // Step counter randomize
-    document.getElementById('stepCount').textContent = (Math.random()*4000+6000).toFixed(0);
+    // Randomize Steps
+    document.getElementById('stepCount').textContent =
+      Math.floor(Math.random() * 4000 + 6000);
 
-    // Toolbar actions
-    document.getElementById('btnBook').onclick  = ()=> location.href='booking.html';
-    document.getElementById('btnRefill').onclick= ()=> location.href='pharmacy.html';
-    document.getElementById('btnChat').onclick  = ()=> document.getElementById('chatModal').style.display='flex';
-    document.getElementById('btnSOS').onclick   = ()=> alert('📞 Calling emergency contact...');
+    // Toolbar Buttons
+    document.getElementById('btnBook').onclick = () => location.href='booking.html';
+    document.getElementById('btnRefill').onclick = () => location.href='pharmacy.html';
+    document.getElementById('btnChat').onclick = () =>
+      document.getElementById('chatModal').style.display='flex';
+    document.getElementById('btnSOS').onclick = () => alert('📞 Calling emergency contact...');
 
-    document.getElementById('closeChat').onclick = ()=> document.getElementById('chatModal').style.display='none';
+    document.getElementById('closeChat').onclick = () =>
+      document.getElementById('chatModal').style.display='none';
 
-    // Charts
+    // Charts Initialization
     new Chart(document.getElementById('chartNut'), {
       type:'doughnut',
-      data:{ labels:['Carbs','Protein','Fat'], datasets:[{ data:[50,30,20], backgroundColor:['#8ECDF1','#5DAEDC','#3E8ED0'] }] },
+      data:{
+        labels:['Carbs','Protein','Fat'],
+        datasets:[{
+          data:[50,30,20],
+          backgroundColor:['#8ECDF1','#5DAEDC','#3E8ED0']
+        }]
+      },
       options:{ cutout: '70%' }
     });
+
     new Chart(document.getElementById('chartWell'), {
       type:'line',
-      data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[72,75,78,80,77,83,85], borderColor:'#8ECDF1', backgroundColor:'rgba(142,205,241,0.2)', fill:true }] },
-      options:{ plugins:{legend:{display:false}} }
+      data:{
+        labels:['M','T','W','T','F','S','S'],
+        datasets:[{
+          data:[72,75,78,80,77,83,85],
+          borderColor:'#8ECDF1',
+          backgroundColor:'rgba(142,205,241,0.2)',
+          fill:true
+        }]
+      },
+      options:{ plugins:{ legend:{ display:false } } }
     });
+
     new Chart(document.getElementById('chartAct'), {
       type:'bar',
-      data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[8,9,7,10,11,12,9], backgroundColor:'#8ECDF1' }] },
+      data:{
+        labels:['M','T','W','T','F','S','S'],
+        datasets:[{
+          data:[8,9,7,10,11,12,9],
+          backgroundColor:'#8ECDF1'
+        }]
+      },
       options:{ scales:{ y:{ beginAtZero:true } } }
     });
   </script>
