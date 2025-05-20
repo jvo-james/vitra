@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -12,91 +12,69 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-  /* RESET & THEME VARIABLES */
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
-  :root {
-    --accent:#8ECDF1;
-    --bg1:#161B22; /* dark bg */
-    --bg2:#1E2126; /* card bg */
-    --text:#E0E0E0;
-    --muted:rgba(224,224,224,0.6);
-    --radius:8px;
-  }
-  :root.light {
-    --bg1:#F4F4F4; --bg2:#FFFFFF; --text:#111; --muted:rgba(0,0,0,0.4);
-  }
-  html,body{height:100%;background:var(--bg1);color:var(--text);}
-  a{color:inherit;text-decoration:none;}
-  button,input,select,textarea{font:inherit;color:inherit;}
-  button{cursor:pointer;background:none;border:none;}
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+    /* RESET & VARIABLES */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+    :root {
+      --accent:#8ECDF1; --bg1:#161B22; --bg2:#1E2126;
+      --text:#E0E0E0; --muted:rgba(224,224,224,0.6); --radius:8px;
+    }
+    :root.light { --bg1:#F4F4F4; --bg2:#FFF; --text:#111; --muted:rgba(0,0,0,0.4); }
+    html,body{height:100%;background:var(--bg1);color:var(--text);}
+    a{color:inherit;text-decoration:none;} button,input,select,textarea{font:inherit;color:inherit;}
+    button{cursor:pointer;background:none;border:none;}
 
-  /* LAYOUT */
-  body{display:flex;overflow:hidden;}
-  #sidebar{
-    width:240px;background:var(--bg1);display:flex;flex-direction:column;
-    transition:width .3s;
-  }
-  #sidebar.collapsed{width:60px;}
-  .brand{padding:1.5rem;font-size:1.3rem;font-weight:700;color:var(--accent);}
-  .nav-links a{
-    display:flex;align-items:center;gap:.75rem;padding:.9rem 1.2rem;transition:bg .2s;
-  }
-  .nav-links a.active, .nav-links a:hover{background:var(--accent)20;}
-  .nav-links i{width:24px;text-align:center;font-size:1.2rem;color:var(--accent);}
-  .toggle-sidebar{padding:1rem;text-align:center;border-top:1px solid #29303A;cursor:pointer;}
+    /* LAYOUT */
+    body{display:flex;overflow:hidden;}
+    #sidebar{width:240px;background:var(--bg1);display:flex;flex-direction:column;transition:width .3s;}
+    #sidebar.collapsed{width:60px;}
+    .brand{padding:1.5rem;font-weight:700;color:var(--accent);}
+    .nav-links a{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.2rem;transition:bg .2s;}
+    .nav-links a.active,.nav-links a:hover{background:var(--accent)20;}
+    .nav-links i{width:24px;text-align:center;color:var(--accent);}
+    .toggle-sidebar{padding:1rem;text-align:center;border-top:1px solid #29303A;cursor:pointer;}
 
-  #main{flex:1;display:flex;flex-direction:column;}
-  header{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:1rem 2rem;background:var(--bg1)CC;backdrop-filter:blur(6px);
-    position:sticky;top:0;z-index:10;
-  }
-  #toggleSidebarBtn{font-size:1.4rem;cursor:pointer;}
-  .greeting h1{font-size:1.9rem;display:flex;align-items:center;gap:.5rem;}
-  .greeting p{opacity:.75;}
-  .header-right i{margin-left:1rem;font-size:1.4rem;cursor:pointer;transition:transform .2s;}
-  .header-right i:hover{transform:scale(1.2);}
-  .content{padding:1rem 2rem;overflow-y:auto;flex:1;}
+    #main{flex:1;display:flex;flex-direction:column;}
+    header{display:flex;justify-content:space-between;align-items:center;
+      padding:1rem 2rem;background:var(--bg1)CC;backdrop-filter:blur(6px);
+      position:sticky;top:0;z-index:10;
+    }
+    .header-left{display:flex;align-items:center;gap:1rem;}
+    #toggleSidebarBtn{font-size:1.4rem;cursor:pointer;}
+    .greeting h1{font-size:1.8rem;display:flex;align-items:center;gap:.5rem;}
+    .greeting p{opacity:.75;}
+    .header-right i{margin-left:1rem;font-size:1.3rem;cursor:pointer;transition:transform .2s;}
+    .header-right i:hover{transform:scale(1.2);}
+    .content{flex:1;overflow-y:auto;padding:1rem 2rem;}
 
-  /* STATS CARDS */
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;}
-  .stat-card{
-    background:var(--bg2);border-radius:var(--radius);padding:1rem;
-    display:flex;align-items:center;gap:1rem;transition:transform .2s,box-shadow .2s;
-  }
-  .stat-card:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.5);}
-  .stat-card i{font-size:1.8rem;color:var(--accent);}
-  .details h3{font-size:1.1rem;margin-bottom:.3rem;}
-  .details p{opacity:.8;color:var(--accent);}
+    /* STATS CARDS */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
+    .stat-card{background:var(--bg2);border-radius:var(--radius);padding:1rem;display:flex;align-items:center;gap:1rem;transition:transform .2s,box-shadow .2s;}
+    .stat-card:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+    .stat-card i{font-size:1.6rem;color:var(--accent);}
+    .stat-card .details h3{font-size:1rem;margin-bottom:.3rem;}
+    .stat-card .details p{opacity:.8;color:var(--accent);}
 
-  /* MODULES & CHARTS */
-  section.module{
-    background:var(--bg2);border-radius:var(--radius);
-    padding:1rem;margin-bottom:1.5rem;transition:box-shadow .2s;
-  }
-  section.module:hover{box-shadow:0 4px 12px rgba(0,0,0,0.5);}
-  section.module h2{font-size:1.2rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
-  section.module form{display:flex;flex-direction:column;gap:.5rem;}
-  section.module label{font-size:.9rem;}
-  section.module input,section.module select,section.module textarea{
-    width:100%;background:var(--bg1);border:1px solid #29303A;
-    padding:.5rem;border-radius:var(--radius);transition:border-color .2s;
-  }
-  section.module input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
-  section.module button{
-    background:var(--accent);color:var(--bg1);padding:.5rem 1rem;
-    border-radius:var(--radius);transition:background .2s;align-self:flex-start;
-  }
-  section.module button:hover{background:var(--accent)CC;}
-  .small{font-size:.9rem;color:var(--muted);margin-top:.5rem;}
+    /* MODULES */
+    section.module{background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;transition:box-shadow .2s;}
+    section.module:hover{box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+    section.module h2{display:flex;align-items:center;gap:.5rem;font-size:1.1rem;margin-bottom:.75rem;}
+    section.module form{display:flex;flex-direction:column;gap:.5rem;}
+    section.module label{font-size:.9rem;}
+    section.module input,section.module select,section.module textarea{
+      width:100%;background:var(--bg1);border:1px solid #29303A;padding:.5rem;border-radius:var(--radius);transition:border-color .2s;
+    }
+    section.module input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;}
+    section.module button{background:var(--accent);color:var(--bg1);padding:.5rem 1rem;border-radius:var(--radius);transition:background .2s;align-self:flex-start;}
+    section.module button:hover{background:var(--accent)CC;}
+    .small{font-size:.85rem;color:var(--muted);margin-top:.5rem;}
 
-  .chart-box{background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;}
-  .chart-box canvas{width:100%!important;height:180px!important;}
+    /* CHARTS */
+    .chart-box{background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;}
+    .chart-box canvas{width:100%!important;height:180px!important;}
   </style>
 </head>
-
 <body>
+
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="brand"><i class="fas fa-medkit"></i>Vitra</div>
@@ -105,7 +83,7 @@
       <a href="herbs.html" class="active"><i class="fas fa-seedling"></i><span>Herbal AI</span></a>
       <a href="mental.html"><i class="fas fa-brain"></i><span>Mental</span></a>
       <a href="diet.html"><i class="fas fa-utensils"></i><span>Diet</span></a>
-      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>E-Pharmacy</span></a>
+      <a href="pharmacy.html"><i class="fas fa-pills"></i><span>E‑Pharmacy</span></a>
       <a href="booking.html"><i class="fas fa-calendar-check"></i><span>Booking</span></a>
       <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
     </nav>
@@ -130,6 +108,7 @@
     </header>
 
     <div class="content">
+
       <!-- STATS -->
       <div class="stats">
         <div class="stat-card"><i class="fas fa-camera"></i><div class="details"><h3>Identifications</h3><p id="stat-id">0</p></div></div>
@@ -142,148 +121,155 @@
 
       <!-- 1. Snap & Identify -->
       <section class="module">
-        <h2><i class="fas fa-camera"></i> Snap & Identify</h2>
+        <h2><i class="fas fa-camera"></i> AI‑Powered Herb Identification</h2>
+        <p class="small">Computer vision to verify species & purity, prevent adulteration.</p>
         <video id="camera-stream" autoplay style="width:100%;border-radius:var(--radius);background:#000;"></video>
         <button id="snap-btn"><i class="fas fa-camera-retro"></i> Capture</button>
-        <p id="identifyResult" class="small">No image captured yet.</p>
+        <p id="identifyResult" class="small"></p>
       </section>
 
-      <!-- 2. Dosage Calculator -->
+      <!-- 2. Dosage & Profiling -->
       <section class="module">
-        <h2><i class="fas fa-calculator"></i> Dosage Calculator</h2>
+        <h2><i class="fas fa-flask"></i> Phytochemical Profiling & Dosage</h2>
+        <p class="small">ML on assays + patient data for optimized, personalized dosages.</p>
         <form onsubmit="calcDosage();return false;">
-          <label for="weight">Weight (kg)</label>
-          <input type="number" id="weight" min="0" required>
-          <label for="symptom">Symptom</label>
-          <input type="text" id="symptom" required>
-          <button type="submit"><i class="fas fa-check"></i> Calculate</button>
+          <label>Weight (kg)<input type="number" id="weight" min="0" required></label>
+          <label>Symptom<input type="text" id="symptom" required></label>
+          <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
         </form>
         <p id="dosageResult" class="small"></p>
       </section>
 
-      <!-- 3. Interaction Checker -->
+      <!-- 3. Interaction Prediction -->
       <section class="module">
-        <h2><i class="fas fa-exchange-alt"></i> Interaction Checker</h2>
+        <h2><i class="fas fa-exchange-alt"></i> Interaction Prediction</h2>
+        <p class="small">Graph neural nets to forecast herb‑drug & herb‑herb conflicts.</p>
         <form onsubmit="checkInteraction();return false;">
-          <label for="herbA">Herb A</label>
-          <select id="herbA"><option>Ginkgo</option><option>Turmeric</option></select>
-          <label for="herbB">Herb B</label>
-          <select id="herbB"><option>Ginkgo</option><option>St. John’s Wort</option></select>
+          <label>Herb A<select id="herbA"><option>Ginkgo</option><option>Turmeric</option></select></label>
+          <label>Herb B<select id="herbB"><option>Ginkgo</option><option>St. John’s Wort</option></select></label>
           <button type="submit"><i class="fas fa-search"></i> Check</button>
         </form>
         <p id="interactionResult" class="small"></p>
       </section>
 
-      <!-- 4. Blend Optimizer -->
+      <!-- 4. Blend Optimization -->
       <section class="module">
-        <h2><i class="fas fa-cubes"></i> Blend Optimization</h2>
-        <label>Anti‑Inflammatory <input type="range" id="slider1" value="50" class="blend-slider"></label>
-        <label>Antioxidant <input type="range" id="slider2" value="50" class="blend-slider"></label>
-        <label>Calming <input type="range" id="slider3" value="50" class="blend-slider"></label>
+        <h2><i class="fas fa-cubes"></i> Smart Blend Optimization</h2>
+        <p class="small">Evolutionary algorithms to mix compounds for max benefit, min side‑effects.</p>
+        <label>Anti‑Inflammatory<input type="range" id="slider1" value="50"></label>
+        <label>Antioxidant<input type="range" id="slider2" value="50"></label>
+        <label>Calming<input type="range" id="slider3" value="50"></label>
         <button onclick="buildBlend();"><i class="fas fa-magic"></i> Build Blend</button>
         <p id="blendResult" class="small"></p>
       </section>
 
       <!-- 5. Harvest Forecast -->
       <div class="chart-box">
-        <h2><i class="fas fa-chart-line"></i> Harvest Forecast</h2>
+        <h2><i class="fas fa-chart-line"></i> Predictive Harvest Forecast</h2>
+        <p class="small">IoT & time‑series models for optimal harvest windows.</p>
         <canvas id="harvestChart"></canvas>
       </div>
 
       <!-- 6. Virtual Herbalist Chatbot -->
-      <button id="chatToggle" style="position:fixed;bottom:20px;right:80px;background:var(--accent);border-radius:50%;padding:1rem;color:#000;z-index:20;">
-        <i class="fas fa-comment-medical"></i>
-      </button>
-      <div id="chatModal" class="chat-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:30;">
-        <div class="module" style="max-width:400px;width:90%;">
-          <h2><i class="fas fa-comment-medical"></i> Virtual Herbalist</h2>
-          <div id="chatBox" style="max-height:200px;overflow-y:auto;background:var(--bg1);padding:.5rem;border-radius:var(--radius);"></div>
-          <div style="display:flex;gap:.5rem;margin-top:.5rem;">
-            <input id="chatInput" placeholder="Ask a question…" style="flex:1;padding:.5rem;border:1px solid #29303A;border-radius:var(--radius);background:var(--bg1);color:inherit;">
-            <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
-          </div>
-          <button onclick="document.getElementById('chatModal').style.display='none';" style="margin-top:.5rem;background:var(--accent);padding:.5rem 1rem;border-radius:var(--radius);">Close</button>
+      <section class="module">
+        <h2><i class="fas fa-comment-medical"></i> Virtual Herbalist Chatbot</h2>
+        <p class="small">Conversational AI for evidence‑based guidance, live pharmacist escalation.</p>
+        <div id="chatBox" style="max-height:150px;overflow-y:auto;padding:.5rem;background:var(--bg1);border-radius:var(--radius);"></div>
+        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+          <input id="chatInput" placeholder="Ask me about herbs…" style="flex:1;padding:.5rem;border:1px solid #29303A;border-radius:var(--radius);background:var(--bg1);">
+          <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
         </div>
-      </div>
+      </section>
 
-      <!-- 7. Outcome Tracking -->
+      <!-- 7. Outcomes Monitoring -->
       <div class="chart-box">
-        <h2><i class="fas fa-chart-bar"></i> Outcome Tracking</h2>
+        <h2><i class="fas fa-chart-bar"></i> Outcomes Monitoring</h2>
+        <p class="small">Closed‑loop learning from patient feedback & side‑effects.</p>
         <canvas id="outcomeChart"></canvas>
       </div>
+
+      <!-- FULL LIST OF AI INTEGRATIONS -->
+      <section class="module">
+        <h2><i class="fas fa-lightbulb"></i>Innovative AI Integrations</h2>
+        <ul style="margin-left:1rem;list-style:disc;">
+          <li><strong>Herb Identification & Authentication:</strong> CNNs for species & purity checks.</li>
+          <li><strong>Phytochemical Profiling & Dosage:</strong> ML on assay data + patient metrics.</li>
+          <li><strong>Interaction Prediction:</strong> GNNs over biochemical knowledge graphs.</li>
+          <li><strong>Smart Blend Optimization:</strong> Evolutionary/reinforcement learning for custom blends.</li>
+          <li><strong>Predictive Harvest Forecasting:</strong> IoT & time‑series models for peak compounds.</li>
+          <li><strong>Virtual Herbalist Chatbot:</strong> Conversational AI with pharmacist fallback.</li>
+          <li><strong>Outcomes & Continuous Learning:</strong> Feedback‑driven ML to refine protocols.</li>
+        </ul>
+      </section>
+
     </div>
   </div>
 
   <script>
-  const API_BASE='http://localhost:4000/api';
-  function bumpStat(key){
-    const el=document.getElementById('stat-'+key);
-    if(!el) return;
-    const v=+el.textContent+1; el.textContent=v;
-  }
-  // 1. Snap & Identify
-  navigator.mediaDevices.getUserMedia({video:true}).then(s=>document.getElementById('camera-stream').srcObject=s);
-  document.getElementById('snap-btn').onclick=()=>{
-    bumpStat('id');
-    document.getElementById('identifyResult').textContent='🔍 Identified: Echinacea purpurea (95%)';
-  };
+    const API_BASE='http://localhost:4000/api';
+    function bumpStat(key){
+      const el=document.getElementById(`stat-${key}`);
+      if(!el) return;
+      el.textContent = +el.textContent + 1;
+    }
 
-  // 2. Dosage
-  document.querySelector('section:nth-of-type(2) form').onsubmit=e=>{
-    e.preventDefault(); bumpStat('dose');
-    const w=+document.getElementById('weight').value,s=document.getElementById('symptom').value;
-    document.getElementById('dosageResult').textContent=`Dose for ${s}: ${Math.round(w*0.5)} mg/day`;
-  };
+    // Camera & Identify
+    navigator.mediaDevices.getUserMedia({video:true})
+      .then(s=>document.getElementById('camera-stream').srcObject=s);
+    document.getElementById('snap-btn').onclick=()=>{
+      bumpStat('id');
+      document.getElementById('identifyResult').textContent='Identified: Echinacea purpurea (95%)';
+    };
 
-  // 3. Interaction
-  document.querySelector('section:nth-of-type(3) form').onsubmit=e=>{
-    e.preventDefault(); bumpStat('int');
-    const a=document.getElementById('herbA').value, b=document.getElementById('herbB').value;
-    document.getElementById('interactionResult').textContent = a==='Turmeric'&&b==='St. John’s Wort'
-      ? '⚠️ Interaction risk detected!' : 'No major interaction.';
-  };
+    // Dosage
+    document.querySelector('#main section:nth-of-type(2) form')
+      .onsubmit=e=>{ e.preventDefault(); bumpStat('dose');
+        const w=+weight.value,s=symptom.value;
+        dosageResult.textContent=`Dose for ${s}: ${Math.round(w*0.5)} mg/day`;
+      };
 
-  // 4. Blend
-  function buildBlend(){
-    bumpStat('blend');
-    const a=+slider1.value,b=+slider2.value,c=+slider3.value;
-    document.getElementById('blendResult').textContent=`Blend: ${a}% anti‑inflam, ${b}% anti‑oxid, ${c}% calming.`;
-  }
+    // Interaction
+    document.querySelector('#main section:nth-of-type(3) form')
+      .onsubmit=e=>{ e.preventDefault(); bumpStat('int');
+        interactionResult.textContent='No major interactions detected.';
+      };
 
-  // 5. Harvest Chart
-  new Chart(document.getElementById('harvestChart'),{
-    type:'line',
-    data:{labels:['Jan','Mar','May','Jul','Sep','Nov'],datasets:[{data:[10,25,40,55,65,75],borderColor:'var(--accent)',fill:false}]},
-    options:{plugins:{legend:{display:false}}}
-  }); bumpStat('harvest');
+    // Blend
+    function buildBlend(){
+      bumpStat('blend');
+      blendResult.textContent=`Blend ratios: ${slider1.value} / ${slider2.value} / ${slider3.value}`;
+    }
 
-  // 6. Chatbot
-  document.getElementById('chatToggle').onclick=()=>document.getElementById('chatModal').style.display='flex';
-  document.getElementById('sendChat').onclick=async()=>{
-    const inp=document.getElementById('chatInput'),txt=inp.value.trim(); if(!txt) return;
-    bumpStat('chat');
-    chatBox.innerHTML+=`<p><strong>You:</strong> ${txt}</p>`;
-    inp.value='';
-    // stub reply
-    chatBox.innerHTML+=`<p><strong>Herbalist:</strong> Chamomile helps insomnia.</p>`;
-    chatBox.scrollTop=chatBox.scrollHeight;
-  };
+    // Harvest chart
+    new Chart(harvestChart,{type:'line',data:{labels:['Jan','Mar','May','Jul','Sep','Nov'],
+      datasets:[{data:[10,25,40,55,65,80],borderColor:'var(--accent)',fill:false}]},
+      options:{plugins:{legend:{display:false}}}});
+    bumpStat('harvest');
 
-  // 7. Outcome Chart
-  new Chart(document.getElementById('outcomeChart'),{
-    type:'bar',
-    data:{labels:['Wk1','Wk2','Wk3','Wk4'],datasets:[{data:[20,40,60,80],backgroundColor:'var(--accent)'}]},
-    options:{scales:{y:{beginAtZero:true,max:100}}}
-  }); bumpStat('outcome');
+    // Chatbot
+    sendChat.onclick=()=>{
+      const msg=chatInput.value.trim(); if(!msg) return;
+      bumpStat('chat');
+      chatBox.innerHTML+=`<p><strong>You:</strong> ${msg}</p>`;
+      chatInput.value='';
+      chatBox.innerHTML+=`<p><strong>Herbalist:</strong> Chamomile is great for insomnia.</p>`;
+      chatBox.scrollTop=chatBox.scrollHeight;
+    };
 
-  // THEME & SIDEBAR TOGGLE
-  document.getElementById('themeToggle').onclick=()=>{
-    document.documentElement.classList.toggle('light');
-    document.getElementById('themeToggle').classList.toggle('fa-sun');
-  };
-  [ 'toggleSidebarBtn', ...document.getElementsByClassName('toggle-sidebar') ].forEach(btn=>{
-    if(btn.addEventListener) btn.addEventListener('click',()=>sidebar.classList.toggle('collapsed'));
-  });
+    // Outcome chart
+    new Chart(outcomeChart,{type:'bar',data:{labels:['Wk1','Wk2','Wk3','Wk4'],
+      datasets:[{data:[20,45,60,85],backgroundColor:'var(--accent)'}]},
+      options:{scales:{y:{beginAtZero:true,max:100}}}});
+    bumpStat('outcome');
+
+    // Dark/Light & Sidebar
+    themeToggle.onclick=()=>{
+      document.documentElement.classList.toggle('light');
+      themeToggle.classList.toggle('fa-sun');
+    };
+    const sb=sidebar;
+    toggleSidebarBtn.onclick=()=>sb.classList.toggle('collapsed');
+    document.querySelector('.toggle-sidebar').onclick=()=>sb.classList.toggle('collapsed');
   </script>
 </body>
 </html>
