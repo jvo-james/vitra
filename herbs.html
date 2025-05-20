@@ -521,6 +521,10 @@ section.module button:hover {
       const el = document.getElementById(`stat-${key}`);
       if (el) el.textContent = current;
     }
+// In your diagnostics route, before calling OpenAI:
+if (process.env.MOCK === '1') {
+  return res.json({ suggestion: `🛠️ DEV STUB: Diagnosed "${symptoms}" (mocked).` });
+}
 
     // 1. AI Diagnostics
     async function runDiagnostics() {
