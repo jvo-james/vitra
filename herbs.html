@@ -504,7 +504,7 @@ section.module button:hover {
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:4000/api'; 
+    const API_BASE = "http://localhost:8000";
     
     // Initialize and display usage stats for all modules
     const statKeys = ['dx','form','id','pred','dose','int','chat','research','inventory','genetics'];
@@ -526,7 +526,8 @@ section.module button:hover {
     async function runDiagnostics() {
       bumpStat('dx');
       const symptoms = document.getElementById('dxInput').value;
-      const res = await fetch('http://localhost:4000/api/diagnostics', {
+      // ← Use API_BASE instead of hard‑coding port 4000
+      const res = await fetch(`${API_BASE}/api/diagnostics`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ symptoms })
@@ -541,7 +542,7 @@ section.module button:hover {
       const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value);
       const age = document.getElementById('pfAge').value;
       const weight = document.getElementById('pfWeight').value;
-      const res = await fetch('http://localhost:4000/api/formulations', {
+     const res = await fetch(`${API_BASE}/api/formulations`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ herbs, age, weight })
@@ -556,7 +557,7 @@ section.module button:hover {
       const fileInput = document.getElementById('ingUpload');
       const formData = new FormData();
       formData.append('image', fileInput.files[0]);
-      const res = await fetch('http://localhost:4000/api/identify-ingredient', {
+     const res = await fetch(`${API_BASE}/api/identify-ingredient`, {
         method: 'POST',
         body: formData
       });
@@ -570,7 +571,7 @@ section.module button:hover {
       bumpStat('pred');
       const [ herb, ...condArr ] = document.getElementById('predInput').value.split(' ');
       const condition = condArr.join(' ');
-      const res = await fetch('http://localhost:4000/api/predictive-efficacy', {
+     const res = await fetch(`${API_BASE}/api/predictive-efficacy`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ herb, condition })
@@ -588,7 +589,7 @@ section.module button:hover {
       chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
       document.getElementById('chatInput').value = '';
       // (optionally maintain full history in an array)
-      const res = await fetch('http://localhost:4000/api/chat', {
+     const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ message, history: [] })
@@ -602,7 +603,7 @@ section.module button:hover {
     async function runResearch() {
       bumpStat('research');
       const query = document.getElementById('researchQuery').value;
-      const res = await fetch('http://localhost:4000/api/research', {
+     const res = await fetch(`${API_BASE}/api/research`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ query })
@@ -616,7 +617,8 @@ section.module button:hover {
       bumpStat('inventory');
       const herb = document.getElementById('forecastHerb').value;
       const weeks = +document.getElementById('forecastPeriod').value;
-      const res = await fetch('http://localhost:4000/api/inventory-forecast', {
+      const res = await fetch(`${API_BASE}/api/inventory-forecast`, {
+       method: 'POST',
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ herb, weeks })
@@ -632,7 +634,7 @@ section.module button:hover {
       const fileInput = document.getElementById('geneticUpload');
       const formData = new FormData();
       formData.append('report', fileInput.files[0]);
-      const res = await fetch('http://localhost:4000/api/genetic-match', {
+      const res = await fetch(`${API_BASE}/api/genetic-match`, {
         method: 'POST',
         body: formData
       });
@@ -665,7 +667,7 @@ section.module button:hover {
     bumpStat('dose');
     const weight  = +document.getElementById('weight').value;
     const symptom = document.getElementById('symptom').value.trim();
-    const res = await fetch(`${API_BASE}/dosage`, {
+    const res = await fetch(`${API_BASE}/api/dosage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ weight, symptom })
@@ -680,7 +682,7 @@ section.module button:hover {
     bumpStat('int');
     const herbA = document.getElementById('herbA').value;
     const herbB = document.getElementById('herbB').value;
-    const res = await fetch(`${API_BASE}/interaction`, {
+    const res = await fetch(`${API_BASE}/api/interaction`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ herbA, herbB })
