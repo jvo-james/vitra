@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -16,300 +16,347 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    /* =====-full-height flex container-===== */
     html, body {
-  height: 100%;
-}
-
-    /* ===== Reset & Base ===== */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      display:flex;
-  
-      font-family:'Montserrat',sans-serif;
-      background:#fff;
-      color:#1E2126;
-      overflow:hidden;
+      height: 100%;
+      margin: 0;
     }
-    a { text-decoration:none; color:inherit; }
-    button { cursor:pointer; background:none; border:none; color:inherit; }
-
-    /* ===== Color Palette ===== */
-    :root {
-      --accent: #8ECDF1;
-      --bg: #FFFFFF;
-      --card: #F5F7FA;
-      --text: #1E2126;
-      --muted: rgba(30,33,38,0.6);
+    body {
+      display: flex;
+      font-family: 'Montserrat', sans-serif;
+      background: #FFFFFF;
+      color: #1E2126;
+      overflow: hidden;
     }
 
     /* ===== Sidebar ===== */
     #sidebar {
-      width:220px;
-      background:var(--bg);
-      border-right:1px solid #E2E8F0;
-      display:flex; flex-direction:column;
-      position:fixed; top:0; bottom:0;
-      z-index:10;
+      width: 220px;
+      background: #FFFFFF;
+      border-right: 1px solid #E2E8F0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      display: flex; flex-direction: column;
+      z-index: 100;
     }
     .brand {
-      padding:1.5rem; font-size:1.4rem; font-weight:700;
-      color:var(--accent);
+      padding: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #8ECDF1;
     }
     nav a {
-      display:flex; align-items:center; gap:.75rem;
-      padding:.9rem 1.2rem; color:var(--text);
-      transition:background .2s;
+      display: flex; align-items: center; gap: .75rem;
+      padding: .9rem 1.2rem;
+      color: #1E2126;
+      transition: background .2s;
     }
-    nav a.active, nav a:hover {
-      background:var(--card);
+    nav a.active,
+    nav a:hover {
+      background: #F5F7FA;
     }
-    nav i { width:24px; text-align:center; }
+    nav i { width: 24px; text-align: center; }
 
     /* ===== Top Bar ===== */
     #topbar {
-      margin-left:220px;
-      background:var(--bg);
-      border-bottom:1px solid #E2E8F0;
-      padding:1rem 2rem;
-      display:flex; justify-content:flex-end; align-items:center;
-      position:fixed; top:0; right:0; left:220px; z-index:9;
+      position: fixed;
+      left: 220px; right: 0; top: 0;
+      height: 64px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex; align-items: center;
+      justify-content: flex-end;
+      padding: 0 2rem;
+      z-index: 90;
     }
     #topbar a {
-      margin-left:2rem;
-      font-weight:500;
-      color:var(--text);
+      margin-left: 2rem;
+      color: #1E2126;
+      font-weight: 500;
     }
-    #topbar .account {
-      margin-left:2rem;
-      font-size:1.3rem;
-      color:var(--muted);
-      cursor:pointer;
+    .account {
+      margin-left: 2rem;
+      font-size: 1.3rem;
+      color: rgba(30,33,38,0.6);
+      cursor: pointer;
     }
 
-    /* ===== Main Content ===== */
+    /* ===== Main Scrollable Area ===== */
     #main {
-      margin-left:220px;
-      margin-top:64px; /* topbar height */
-      flex:1; 
-      padding:2rem;
+      position: absolute;
+      top: 64px;    /* beneath topbar */
+      bottom: 0;
+      left: 220px;  /* beside sidebar */
+      right: 0;
+      overflow-y: auto;
+      padding: 2rem;
     }
 
-    /* ===== Hero Section (your screenshot) ===== */
+    /* ===== Hero as per your image ===== */
     .hero {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:2rem;
-      align-items:center;
-      margin-bottom:2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
     }
     .hero-left h1 {
-      font-size:2.5rem; font-weight:600;
-      margin-bottom:1rem;
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
     .hero-left button {
-      background:var(--accent);
-      color:#000;
-      padding:.75rem 1.5rem;
-      border-radius:8px;
-      font-size:1rem; font-weight:500;
-      transition:background .2s;
+      background: #8ECDF1;
+      color: #000;
+      padding: .75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background .2s;
     }
     .hero-left button:hover {
-      background:#76bde0;
+      background: #76bde0;
     }
     .hero-right .big-card {
-      background:var(--card);
-      border-radius:12px;
-      padding:1.5rem;
-      display:flex;
-      align-items:center;
-      gap:1.5rem;
+      background: #F5F7FA;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
     }
     .big-card i {
-      font-size:2rem;
-      color:var(--accent);
-      margin-right:.75rem;
-    }
-    .big-card .text {
-      flex:1;
+      font-size: 2rem;
+      color: #8ECDF1;
     }
     .big-card .text h3 {
-      font-size:1.25rem; margin-bottom:.5rem;
+      font-size: 1.25rem;
+      margin-bottom: .5rem;
     }
     .big-card .text p {
-      color:var(--muted);
+      color: rgba(30,33,38,0.6);
     }
     .big-card img {
-      width:140px;
-      border-radius:8px;
+      width: 140px;
+      border-radius: 8px;
     }
 
     .subcards {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:1rem;
-      margin-bottom:2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
     }
     .subcards .card {
-      background:var(--card);
-      border-radius:8px;
-      padding:1.25rem;
-      text-align:center;
-      transition:transform .2s;
+      background: #F5F7FA;
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: transform .2s;
     }
-    .subcards .card:hover { transform:translateY(-4px); }
+    .subcards .card:hover {
+      transform: translateY(-4px);
+    }
     .subcards .card i {
-      font-size:1.5rem;
-      color:var(--accent);
-      margin-bottom:.75rem;
+      font-size: 1.5rem;
+      color: #8ECDF1;
+      margin-bottom: .75rem;
     }
     .subcards .card h4 {
-      margin-bottom:.5rem;
-      font-size:1.1rem;
+      margin-bottom: .5rem;
+      font-size: 1.1rem;
     }
     .subcards .card p {
-      color:var(--muted);
-      font-size:.95rem;
+      color: rgba(30,33,38,0.6);
+      font-size: .95rem;
     }
 
-    /* ===== All the rest ===== */
+    /* ===== Generic Card ===== */
     .card {
-      background:var(--card);
-      border-radius:8px;
-      padding:1rem;
-      margin-bottom:1.5rem;
-      transition:transform .2s;
+      background: #F5F7FA;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      transition: transform .2s;
     }
-    .card:hover { transform:translateY(-4px); }
-    .card h4 { font-size:1rem; margin-bottom:.5rem; }
-    .small { font-size:.9rem; color:var(--muted); }
-
-    /* Herb AI Search */
-    #herbQ {
-      flex:1;
-      padding:.5rem;
-      border:1px solid #E2E8F0;
-      border-radius:4px;
-      background:var(--bg);
+    .card:hover {
+      transform: translateY(-4px);
     }
-    #askHerb {
-      margin-left:.5rem;
-      padding:.5rem 1rem;
-      background:var(--accent);
-      border-radius:4px;
-      color:#000;
+    .card h4 {
+      font-size: 1rem;
+      margin-bottom: .5rem;
+    }
+    .small {
+      font-size: .9rem;
+      color: rgba(30,33,38,0.6);
     }
 
-    /* Widgets grid */
+    /* ===== Herb AI Search ===== */
+    .ai-search {
+      display: flex;
+      gap: .5rem;
+      margin-top: .5rem;
+    }
+    .ai-search input {
+      flex: 1;
+      padding: .5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      background: #FFFFFF;
+    }
+    .ai-search button {
+      background: #8ECDF1;
+      border-radius: 4px;
+      padding: .5rem 1rem;
+      color: #000;
+    }
+
+    /* ===== Widgets ===== */
     #widgets {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:1rem;
-      margin:1.5rem 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
     }
-    .widget h4 { margin-bottom:.5rem; }
-
+    .widget h4 {
+      margin-bottom: .5rem;
+    }
     .slider-container {
-      display:flex; align-items:center; gap:.5rem;
+      display: flex; align-items: center; gap: .5rem;
     }
-    input[type=range] { width:100%; }
+    input[type=range] {
+      width: 100%;
+    }
     input[type=number] {
-      width:60px;
-      padding:.25rem;
-      border:1px solid #E2E8F0;
-      border-radius:4px;
-      text-align:center;
-      background:var(--bg);
-      color:var(--text);
+      width: 60px;
+      padding: .25rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      text-align: center;
+      background: #FFFFFF;
+      color: #1E2126;
     }
 
-    /* Charts */
+    /* ===== Charts ===== */
     .grid-2 {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 1rem;
     }
     canvas.chart {
-      width:100%!important;
-      height:160px!important;
+      width: 100% !important;
+      height: 160px !important;
     }
 
-    /* Medications */
+    /* ===== Medications ===== */
     .meds ul {
-      list-style:none;
-      margin-top:.5rem;
-      color:var(--text);
+      list-style: none;
+      margin-top: .5rem;
+      color: #1E2126;
     }
     .meds li {
-      display:flex; align-items:center; gap:.5rem;
+      display: flex; align-items: center; gap: .5rem;
     }
     #refillAll {
-      margin-top:.5rem;
-      background:var(--accent);
-      padding:.5rem 1rem;
-      border-radius:4px;
-      color:#000;
-      font-weight:500;
+      margin-top: .5rem;
+      background: #8ECDF1;
+      color: #000;
+      padding: .5rem 1rem;
+      border-radius: 4px;
+      font-weight: 500;
     }
 
-    /* Calendar */
+    /* ===== Calendar ===== */
     .calendar {
-      width:100%; border-collapse:collapse; margin-top:.5rem;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: .5rem;
     }
-    .calendar th, .calendar td {
-      padding:.5rem; text-align:center; font-size:.85rem; cursor:pointer;
-      border:1px solid #E2E8F0;
+    .calendar th,
+    .calendar td {
+      padding: .5rem;
+      text-align: center;
+      font-size: .85rem;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
     }
-    .calendar th { background:var(--card); }
+    .calendar th {
+      background: #F5F7FA;
+    }
     .today {
-      background:var(--accent); color:#000; border-radius:4px;
+      background: #8ECDF1;
+      color: #000;
+      border-radius: 4px;
     }
 
-    /* Lists */
-    .list-small { list-style:none; margin-top:.5rem; font-size:.9rem; color:var(--text); }
-    .list-small li { margin-bottom:.25rem; }
-
-    /* News & Tips */
-    .news, .tips {
-      font-size:.9rem; color:var(--text);
-      max-height:150px; overflow-y:auto; margin-top:.5rem;
+    /* ===== Lists ===== */
+    .list-small {
+      list-style: none;
+      margin-top: .5rem;
+      font-size: .9rem;
+      color: #1E2126;
     }
-    .tips ul { list-style:disc inside; }
+    .list-small li {
+      margin-bottom: .25rem;
+    }
 
-    /* Toolbar */
+    /* ===== News & Tips ===== */
+    .news,
+    .tips {
+      font-size: .9rem;
+      color: #1E2126;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: .5rem;
+    }
+    .tips ul {
+      list-style: disc inside;
+    }
+
+    /* ===== Toolbar ===== */
     .toolbar {
-      position:fixed; bottom:20px; right:20px;
-      display:flex; flex-direction:column; gap:12px; z-index:20;
+      position: fixed;
+      bottom: 20px; right: 20px;
+      display: flex; flex-direction: column;
+      gap: 12px;
+      z-index: 80;
     }
     .toolbar button {
-      width:50px; height:50px; border-radius:50%;
-      background:var(--accent); display:flex;
-      align-items:center; justify-content:center;
-      font-size:1.2rem; color:#000;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: #8ECDF1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      color: #000;
+      border: none;
     }
 
-    /* Chat Modal */
+    /* ===== Chat Modal ===== */
     .modal-backdrop {
-      position:fixed; inset:0; background:rgba(0,0,0,0.5);
-      display:none; align-items:center; justify-content:center; z-index:30;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 95;
     }
     .modal {
-      background:var(--bg); padding:1rem; border-radius:8px;
-      width:90%; max-width:400px;
+      background: #FFFFFF;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 90%; max-width: 400px;
     }
     .modal header {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:.5rem; font-weight:600;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: .5rem; font-weight: 600;
     }
     .modal input {
-      width:100%; padding:.5rem; border:1px solid #E2E8F0;
-      border-radius:4px; background:var(--bg); margin-top:.5rem;
-    }
-
-    /* Responsive tweak */
-    @media(max-width:768px){
-      .hero { display:block; }
-      .hero-right, .hero-left { width:100%; }
+      width: 100%;
+      padding: .5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      background: #FFFFFF;
+      color: #1E2126;
+      margin-top: .5rem;
     }
   </style>
 </head>
@@ -325,7 +372,7 @@
     </nav>
   </aside>
 
-  <!-- TOP BAR -->
+  <!-- TOPBAR -->
   <div id="topbar">
     <a href="#">Services</a>
     <a href="#">Profile</a>
@@ -333,10 +380,10 @@
     <i class="fas fa-user-circle account"></i>
   </div>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN SCROLLABLE AREA -->
   <div id="main">
 
-    <!-- Hero matching your image -->
+    <!-- HERO SECTION -->
     <div class="hero">
       <div class="hero-left">
         <h1>Hello, Sarah</h1>
@@ -352,13 +399,12 @@
             <h3>E‑Pharmacy</h3>
             <p>Order medications online</p>
           </div>
-          <!-- your doctor illustration -->
           <img src="doctor.png" alt="Doctor illustration">
         </div>
       </div>
     </div>
 
-    <!-- Sub‑cards row -->
+    <!-- SUB‑CARDS ROW -->
     <div class="subcards">
       <div class="card">
         <i class="fas fa-brain"></i>
@@ -372,19 +418,17 @@
       </div>
     </div>
 
-    <!-- === Below: all your original content === -->
-
-    <!-- Herb AI Search -->
+    <!-- AI‑Herb Search -->
     <div class="card">
       <h4><i class="fas fa-robot"></i> Herb AI Search</h4>
-      <div style="display:flex; gap:.5rem; margin-top:.5rem;">
+      <div class="ai-search">
         <input id="herbQ" placeholder="Ask about a herb…"/>
         <button id="askHerb"><i class="fas fa-question"></i></button>
       </div>
       <p id="herbA" class="small" style="margin-top:.5rem;"></p>
     </div>
 
-    <!-- Widgets -->
+    <!-- WIDGETS -->
     <div id="widgets">
       <div class="card widget">
         <h4><i class="fas fa-smile-beam"></i> Mood Tracking</h4>
@@ -412,7 +456,7 @@
       </div>
     </div>
 
-    <!-- Charts -->
+    <!-- CHARTS -->
     <div class="grid-2">
       <div class="card">
         <h4><i class="fas fa-utensils"></i> Nutrition</h4>
@@ -428,17 +472,17 @@
       <canvas id="chartAct" class="chart"></canvas>
     </div>
 
-    <!-- Medications -->
+    <!-- MEDICATIONS -->
     <div class="card meds">
       <h4><i class="fas fa-pills"></i> Medications</h4>
       <ul>
-        <li><input type="checkbox" checked/> Metformin 500 mg – 08:00</li>
-        <li><input type="checkbox"/> Vitamin D – 20:00</li>
+        <li><input type="checkbox" checked/> Metformin 500 mg – 08:00</li>
+        <li><input type="checkbox"/> Vitamin D – 20:00</li>
       </ul>
       <button id="refillAll"><i class="fas fa-sync-alt" style="margin-right:.5rem;"></i>Refill All</button>
     </div>
 
-    <!-- Calendar & Appointments -->
+    <!-- CALENDAR & APPTS -->
     <div class="grid-2">
       <div class="card">
         <h4><i class="fas fa-calendar-alt"></i> Calendar</h4>
@@ -473,7 +517,7 @@
       </div>
     </div>
 
-    <!-- News & Tips -->
+    <!-- NEWS & TIPS -->
     <div class="grid-2">
       <div class="card">
         <h4><i class="fas fa-newspaper"></i> News</h4>
@@ -498,7 +542,7 @@
 
   </div>
 
-  <!-- Toolbar -->
+  <!-- TOOLBAR -->
   <div class="toolbar">
     <button id="btnBook"><i class="fas fa-calendar-plus"></i></button>
     <button id="btnRefill"><i class="fas fa-prescription-bottle-alt"></i></button>
@@ -506,35 +550,40 @@
     <button id="btnSOS"><i class="fas fa-phone"></i></button>
   </div>
 
-  <!-- Chat Modal -->
+  <!-- CHAT MODAL -->
   <div id="chatModal" class="modal-backdrop">
     <div class="modal">
-      <header>Help Chat <i id="closeChat" class="fas fa-times"></i></header>
+      <header>Help Chat <i id="closeChat" class="fas fa-times" style="cursor:pointer;"></i></header>
       <p>Hi! How can I help you today?</p>
       <input id="chatInput" placeholder="Type your question…"/>
     </div>
   </div>
 
   <script>
-    // Notification toggle
+    // Notifications Toggle
     const bell = document.getElementById('notifIcon'),
           menu = document.getElementById('notifMenu'),
           closeN = document.getElementById('closeNotif');
-    bell.onclick = e => { e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; };
-    closeN.onclick = ()=> menu.style.display='none';
+    bell?.addEventListener('click', e => {
+      e.stopPropagation();
+      menu.style.display = menu.style.display==='block' ? 'none':'block';
+    });
+    closeN?.addEventListener('click', ()=> menu.style.display='none');
     document.addEventListener('click', ()=> menu.style.display='none');
 
     // Herb AI Search
     document.getElementById('askHerb').onclick = () => {
-      const q = document.getElementById('herbQ').value.toLowerCase(), out = document.getElementById('herbA');
-      if(!q) return out.textContent='Please ask about a herb.';
-      if(q.includes('turmeric')) out.textContent='Turmeric reduces inflammation & supports joints.';
-      else if(q.includes('gingko')) out.textContent='Ginkgo improves circulation & cognition.';
-      else out.textContent='Sorry, I don’t have info on that.';
+      const q = document.getElementById('herbQ').value.toLowerCase();
+      const out = document.getElementById('herbA');
+      if (!q) return out.textContent = 'Please ask about a herb.';
+      if (q.includes('turmeric')) out.textContent = 'Turmeric reduces inflammation & supports joints.';
+      else if (q.includes('gingko')) out.textContent = 'Ginkgo improves circulation & cognition.';
+      else out.textContent = 'Sorry, I don’t have info on that.';
     };
 
     // Mood slider
-    const moodR = document.getElementById('moodRange'), moodV = document.getElementById('moodVal');
+    const moodR = document.getElementById('moodRange'),
+          moodV = document.getElementById('moodVal');
     moodV.textContent = moodR.value;
     moodR.oninput = ()=> moodV.textContent = moodR.value;
 
@@ -543,14 +592,14 @@
       alert(`Logged ${document.getElementById('waterIn').value} glasses of water.`);
     };
 
-    // Steps random
+    // Randomize steps
     document.getElementById('stepCount').textContent = Math.floor(Math.random()*4000+6000);
 
-    // Toolbar
-    document.getElementById('btnBook').onclick = ()=> location.href='booking.html';
-    document.getElementById('btnRefill').onclick = ()=> location.href='pharmacy.html';
-    document.getElementById('btnChat').onclick = ()=> document.getElementById('chatModal').style.display='flex';
-    document.getElementById('btnSOS').onclick = ()=> alert('📞 Calling emergency contact...');
+    // Toolbar actions
+    document.getElementById('btnBook').onclick  = ()=> location.href='booking.html';
+    document.getElementById('btnRefill').onclick= ()=> location.href='pharmacy.html';
+    document.getElementById('btnChat').onclick  = ()=> document.getElementById('chatModal').style.display='flex';
+    document.getElementById('btnSOS').onclick   = ()=> alert('📞 Calling emergency contact...');
     document.getElementById('closeChat').onclick = ()=> document.getElementById('chatModal').style.display='none';
 
     // Charts
@@ -562,12 +611,12 @@
     new Chart(document.getElementById('chartWell'), {
       type:'line',
       data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[72,75,78,80,77,83,85], borderColor:'#8ECDF1', backgroundColor:'rgba(142,205,241,0.2)', fill:true }] },
-      options:{ plugins:{ legend:{ display:false } } }
+      options:{ plugins:{legend:{display:false}}}
     });
     new Chart(document.getElementById('chartAct'), {
       type:'bar',
       data:{ labels:['M','T','W','T','F','S','S'], datasets:[{ data:[8,9,7,10,11,12,9], backgroundColor:'#8ECDF1' }] },
-      options:{ scales:{ y:{ beginAtZero:true } } }
+      options:{ scales:{ y:{beginAtZero:true}}}
     });
   </script>
 </body>
