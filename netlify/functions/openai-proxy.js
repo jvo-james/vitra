@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 export async function handler(event) {
   try {
     const { messages } = JSON.parse(event.body);
-    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export async function handler(event) {
         max_tokens: 500
       })
     });
-    const json = await openaiRes.json();
+    const json = await res.json();
     return { statusCode: 200, body: JSON.stringify(json) };
   } catch (err) {
     return { statusCode: 500, body: err.toString() };
