@@ -331,7 +331,7 @@ section.module button:hover {
       <!-- 1. AI-Powered Diagnostic Tools -->
       <section class="module" aria-labelledby="dx-section">
         <h2 id="dx-section"><i class="fas fa-stethoscope"></i>AI Diagnostic Tool</h2>
-       <form onsubmit="console.log('▶ runDiagnostics fired'); runDiagnostics(); return false;">
+       <form id="dx-form">
           <label class="sr-only" for="dxInput">Describe symptoms</label>
           <textarea id="dxInput" placeholder="Describe symptoms, history, lab results..." required></textarea>
           <button type="submit"><i class="fas fa-notes-medical"></i> Analyze</button>
@@ -342,7 +342,7 @@ section.module button:hover {
       <!-- 2. Personalized Herbal Formulations -->
       <section class="module" aria-labelledby="pf-section">
         <h2 id="pf-section"><i class="fas fa-user-shield"></i>Personalized Formulation</h2>
-        <form onsubmit="makePersonalized(); return false;">
+        <form id="pf-form">
           <label for="pfHerbs">Select Herbs</label>
           <select id="pfHerbs" multiple required>
             <option>Ginkgo Biloba</option><option>Turmeric</option><option>Valerian</option>
@@ -360,7 +360,7 @@ section.module button:hover {
       <!-- 3. AI-Driven Ingredient Identification -->
       <section class="module" aria-labelledby="ing-section">
         <h2 id="ing-section"><i class="fas fa-leaf"></i>Ingredient Identification</h2>
-        <form onsubmit="identifyIngredient(); return false;">
+        <form id="ing-form">
           <label for="ingUpload" class="sr-only">Upload image of herb</label>
           <input type="file" id="ingUpload" accept="image/*" required>
           <button type="submit"><i class="fas fa-microscope"></i> Identify</button>
@@ -371,7 +371,7 @@ section.module button:hover {
       <!-- 4. Predictive Analysis for Efficacy -->
       <section class="module" aria-labelledby="pred-section">
         <h2 id="pred-section"><i class="fas fa-chart-pie"></i>Predictive Efficacy</h2>
-        <form onsubmit="runPrediction(); return false;">
+        <form id="pred-form">
           <label for="predInput">Herb & Condition</label>
           <input id="predInput" placeholder="e.g. Turmeric arthritis" required>
           <button type="submit"><i class="fas fa-brain"></i> Predict</button>
@@ -392,7 +392,7 @@ section.module button:hover {
      <!-- 6. AI‑Driven Research Engine -->
 <section class="module" aria-labelledby="research-section">
   <h2 id="research-section"><i class="fas fa-book-reader"></i>Research Engine</h2>
-  <form onsubmit="runResearch(); return false;">
+  <form id="research-form">
     <label for="researchQuery">Search studies or texts</label>
     <input id="researchQuery" placeholder="e.g. ‘Turmeric anti‑inflammatory clinical trial’" required/>
     <button type="submit"><i class="fas fa-search"></i> Search</button>
@@ -404,7 +404,7 @@ section.module button:hover {
 <!-- 7. Inventory & Sourcing Forecast -->
 <section class="module" aria-labelledby="inventory-section">
   <h2 id="inventory-section"><i class="fas fa-warehouse"></i>Inventory Forecast</h2>
-  <form onsubmit="forecastInventory(); return false;">
+  <form id="inventory-form">
     <label for="forecastHerb">Herb</label>
     <select id="forecastHerb" required>
       <option>Turmeric</option><option>Ginkgo Biloba</option><option>Ashwagandha</option>
@@ -419,7 +419,7 @@ section.module button:hover {
 <!-- 8. Genetic-Herbal Match -->
 <section class="module" aria-labelledby="genetics-section">
   <h2 id="genetics-section"><i class="fas fa-dna"></i>Genetic Match</h2>
-  <form onsubmit="runGeneticMatch(); return false;">
+  <form id="genetics-form">
     <label for="geneticUpload">Upload genetic report (CSV/JSON)</label>
     <input type="file" id="geneticUpload" accept=".csv,.json" required/>
     <button type="submit"><i class="fas fa-user-md"></i> Analyze</button>
@@ -452,7 +452,7 @@ section.module button:hover {
       <!-- Existing: Dosage Calculator -->
       <section class="module" aria-labelledby="dose-section">
         <h2 id="dose-section"><i class="fas fa-calculator"></i>Dosage Calculator</h2>
-        <form onsubmit="calcDosage(); return false;">
+       <form id="dose-form">
           <label for="weight">Weight (kg)</label>
           <input type="number" id="weight" placeholder="Weight" min="0" required>
           <label for="symptom">Symptom</label>
@@ -465,7 +465,7 @@ section.module button:hover {
       <!-- Existing: Interaction Checker -->
       <section class="module" aria-labelledby="int-section">
         <h2 id="int-section"><i class="fas fa-exchange-alt"></i>Interaction Checker</h2>
-        <form onsubmit="checkInteraction(); return false;">
+        <form id="int-form">
           <label for="herbA">Herb A</label>
           <select id="herbA" required>
             <option>Ginkgo Biloba</option><option>Turmeric</option><option>St. John’s Wort</option>
@@ -711,6 +711,72 @@ async function callOpenAI(messages) {
       });
       obs.observe(document.getElementById('trendingChart'));
     });
+
+      // + DOMContentLoaded: wire up all forms via JS
+  document.addEventListener('DOMContentLoaded', () => {
+    // Diagnostics form
+    document.getElementById('dx-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        runDiagnostics();
+      });
+
+    // Personalized Formulations
+    document.getElementById('pf-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        makePersonalized();
+      });
+
+    // Ingredient Identification
+    document.getElementById('ing-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        identifyIngredient();
+      });
+
+    // Predictive Efficacy
+    document.getElementById('pred-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        runPrediction();
+      });
+
+    // Research Engine
+    document.getElementById('research-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        runResearch();
+      });
+
+    // Inventory Forecast
+    document.getElementById('inventory-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        forecastInventory();
+      });
+
+    // Genetic Match
+    document.getElementById('genetics-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        runGeneticMatch();
+      });
+
+    // Dosage Calculator
+    document.getElementById('dose-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        calcDosage();
+      });
+
+    // Interaction Checker
+    document.getElementById('int-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        checkInteraction();
+      });
+  });
   </script>
 
 </body>
