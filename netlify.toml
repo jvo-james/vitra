@@ -1,0 +1,9 @@
+[build]
+  # Serve your static HTML from the project root
+  publish = "."
+  # Look here for your Netlify Functions
+  functions = "netlify/functions"
+
+[dev]
+  # If you ever run `netlify dev`, it’ll wire up these functions too
+  functions = "netlify/functions"
