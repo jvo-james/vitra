@@ -503,199 +503,172 @@ section.module button:hover {
     </div>
   </div>
 
-  <script>
-    const API_BASE = "http://localhost:8000";
-    
-    // Initialize and display usage stats for all modules
-    const statKeys = ['dx','form','id','pred','dose','int','chat','research','inventory','genetics'];
-    statKeys.forEach(key => {
-      if (!localStorage.getItem(key)) localStorage.setItem(key, '0');
-      const el = document.getElementById(`stat-${key}`);
-      if (el) el.textContent = localStorage.getItem(key);
-    });
+    <script>
+    // ———————————————————————————————
+    // 1) Put your key in an environment variable
+    //    (e.g. REACT_APP_OPENAI_API_KEY, GH secret, netlify env var).
+    //    Never hard-code it in your repo!
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    // ———————————————————————————————
 
-    // Helper to bump a usage counter
+    // Universal helper to call ChatGPT
+    async function callOpenAI(messages) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages
+        })
+      });
+      const { choices, error } = await res.json();
+      if (error) throw new Error(error.message);
+      return choices[0].message.content.trim();
+    }
+
+    // bumpStat helper unchanged
     function bumpStat(key) {
       const current = +localStorage.getItem(key) + 1;
       localStorage.setItem(key, current);
       const el = document.getElementById(`stat-${key}`);
       if (el) el.textContent = current;
     }
-// In your diagnostics route, before calling OpenAI:
-if (process.env.MOCK === '1') {
-  return res.json({ suggestion: `🛠️ DEV STUB: Diagnosed "${symptoms}" (mocked).` });
-}
 
     // 1. AI Diagnostics
     async function runDiagnostics() {
       bumpStat('dx');
       const symptoms = document.getElementById('dxInput').value;
-      // ← Use API_BASE instead of hard‑coding port 4000
-      const res = await fetch(`${API_BASE}/api/diagnostics`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ symptoms })
-      });
-      const { suggestion } = await res.json();
-      document.getElementById('dxResult').textContent = suggestion;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You are an expert herbal medicine diagnostic assistant. Suggest appropriate herbal regimens given patient symptoms and background.' },
+        { role: 'user', content: `Patient info: ${symptoms}` }
+      ]);
+      document.getElementById('dxResult').textContent = reply;
     }
 
     // 2. Personalized Formulations
     async function makePersonalized() {
       bumpStat('form');
-      const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value);
+      const herbs = [...document.getElementById('pfHerbs').selectedOptions].map(o => o.value).join(', ');
       const age = document.getElementById('pfAge').value;
       const weight = document.getElementById('pfWeight').value;
-     const res = await fetch(`${API_BASE}/api/formulations`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herbs, age, weight })
-      });
-      const { formula } = await res.json();
-      document.getElementById('pfResult').textContent = formula;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You formulate custom herbal mixtures based on selected herbs, age and weight.' },
+        { role: 'user', content: `Herbs available: ${herbs}. Patient age: ${age}, weight: ${weight}kg. Provide a dosage and preparation method.` }
+      ]);
+      document.getElementById('pfResult').textContent = reply;
     }
 
-    // 3. Ingredient Identification
+    // 3. Ingredient Identification (text demo)
     async function identifyIngredient() {
       bumpStat('id');
-      const fileInput = document.getElementById('ingUpload');
-      const formData = new FormData();
-      formData.append('image', fileInput.files[0]);
-     const res = await fetch(`${API_BASE}/api/identify-ingredient`, {
-        method: 'POST',
-        body: formData
-      });
-      const { species, purity } = await res.json();
-      document.getElementById('ingResult').textContent =
-        `✅ Verified: ${species} (${purity}% purity).`;
+      const file = document.getElementById('ingUpload').files[0];
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You are an AI that identifies plant species and potential contaminants from descriptions of images.' },
+        { role: 'user', content: `Image filename: ${file.name}. Describe the species and estimate purity in percent.` }
+      ]);
+      document.getElementById('ingResult').textContent = reply;
     }
 
     // 4. Predictive Efficacy
     async function runPrediction() {
       bumpStat('pred');
-      const [ herb, ...condArr ] = document.getElementById('predInput').value.split(' ');
-      const condition = condArr.join(' ');
-     const res = await fetch(`${API_BASE}/api/predictive-efficacy`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herb, condition })
-      });
-      const { efficacy } = await res.json();
-      document.getElementById('predResult').textContent = efficacy;
+      const [ herb, ...conds ] = document.getElementById('predInput').value.split(' ');
+      const condition = conds.join(' ');
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You predict the likely efficacy score (0–100) of a herb for a given condition.' },
+        { role: 'user', content: `Herb: ${herb}. Condition: ${condition}. Provide a numerical efficacy score and a brief rationale.` }
+      ]);
+      document.getElementById('predResult').textContent = reply;
     }
 
     // 5. Education Chatbot
-    const chatBox = document.getElementById('chatBox');
-    document.getElementById('sendChat').addEventListener('click', async () => {
-      const message = document.getElementById('chatInput').value.trim();
-      if (!message) return;
-      bumpStat('chat');
-      chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-      document.getElementById('chatInput').value = '';
-      // (optionally maintain full history in an array)
-     const res = await fetch(`${API_BASE}/api/chat`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ message, history: [] })
+    (function initChatbot() {
+      const chatBox = document.getElementById('chatBox');
+      const history = [
+        { role: 'system', content: 'You are a friendly AI tutor for herbal medicine education.' }
+      ];
+      document.getElementById('sendChat').addEventListener('click', async () => {
+        const msg = document.getElementById('chatInput').value.trim();
+        if (!msg) return;
+        bumpStat('chat');
+        chatBox.innerHTML += `<p><strong>You:</strong> ${msg}</p>`;
+        history.push({ role: 'user', content: msg });
+        document.getElementById('chatInput').value = '';
+        const reply = await callOpenAI(history);
+        history.push({ role: 'assistant', content: reply });
+        chatBox.innerHTML += `<p><strong>Vitra AI:</strong> ${reply}</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
       });
-      const { reply } = await res.json();
-      chatBox.innerHTML += `<p><strong>Vitra AI:</strong> ${reply}</p>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
+    })();
 
     // 6. Research Engine
     async function runResearch() {
       bumpStat('research');
       const query = document.getElementById('researchQuery').value;
-     const res = await fetch(`${API_BASE}/api/research`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ query })
-      });
-      const { summary } = await res.json();
-      document.getElementById('researchResults').textContent = summary;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You summarize scientific studies and clinical trials concisely.' },
+        { role: 'user', content: `Find and summarize key findings for: ${query}` }
+      ]);
+      document.getElementById('researchResults').textContent = reply;
     }
 
     // 7. Inventory Forecast
     async function forecastInventory() {
       bumpStat('inventory');
       const herb = document.getElementById('forecastHerb').value;
-      const weeks = +document.getElementById('forecastPeriod').value;
-      const res = await fetch(`${API_BASE}/api/inventory-forecast`, {
-       method: 'POST',
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ herb, weeks })
-      });
-      const { forecast } = await res.json();
-      document.getElementById('inventoryResult').textContent =
-        `📈 Forecast: [${forecast.join(', ')}] (units/week)`;
+      const weeks = document.getElementById('forecastPeriod').value;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You forecast weekly demand for herbal inventory based on past trends.' },
+        { role: 'user', content: `Herb: ${herb}. Forecast period: ${weeks} weeks. Output a JSON array of numbers representing units/week.` }
+      ]);
+      document.getElementById('inventoryResult').textContent = reply;
     }
 
     // 8. Genetic-Herbal Match
     async function runGeneticMatch() {
       bumpStat('genetics');
-      const fileInput = document.getElementById('geneticUpload');
-      const formData = new FormData();
-      formData.append('report', fileInput.files[0]);
-      const res = await fetch(`${API_BASE}/api/genetic-match`, {
-        method: 'POST',
-        body: formData
-      });
-      const { analysis } = await res.json();
-      document.getElementById('geneticResult').textContent = analysis;
+      const file = document.getElementById('geneticUpload').files[0];
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You interpret genetic profiles to recommend herbs suited to genetic markers.' },
+        { role: 'user', content: `Genetic report filename: ${file.name}. Provide analysis of genetic variants and suggested herbs.` }
+      ]);
+      document.getElementById('geneticResult').textContent = reply;
     }
 
-    // AR-powered live scan
-    async function startAR() {
-      const vid = document.getElementById('arVideo');
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        vid.srcObject = stream;
-        vid.style.display = 'block';
-        document.getElementById('ingResult').textContent = '🔍 Point camera at herb…';
-        // Integrate TensorFlow.js model here
-      } catch {
-        document.getElementById('ingResult').textContent = '⚠️ Please allow camera access.';
-      }
-    }
-
-    // Existing: AI Herb Identification
+    // 9. Existing: AI Herb Identification (demo stub)
     function identifyHerb() {
       bumpStat('id');
       document.getElementById('identifyResult').textContent = '🏷️ Identified: Turmeric.';
     }
 
-    // Dosage Calculator
+    // 10. Dosage Calculator
     async function calcDosage() {
-    bumpStat('dose');
-    const weight  = +document.getElementById('weight').value;
-    const symptom = document.getElementById('symptom').value.trim();
-    const res = await fetch(`${API_BASE}/api/dosage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weight, symptom })
-    });
-    const { dosage } = await res.json();
-    document.getElementById('dosageResult').textContent = dosage;
-  }
+      bumpStat('dose');
+      const weight = +document.getElementById('weight').value;
+      const symptom = document.getElementById('symptom').value;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You calculate herbal dosage based on weight and symptom guidelines.' },
+        { role: 'user', content: `Weight: ${weight}kg. Symptom: ${symptom}. Provide an appropriate daily dosage.` }
+      ]);
+      document.getElementById('dosageResult').textContent = reply;
+    }
 
+    // 11. Interaction Checker
+    async function checkInteraction() {
+      bumpStat('int');
+      const herbA = document.getElementById('herbA').value;
+      const herbB = document.getElementById('herbB').value;
+      const reply = await callOpenAI([
+        { role: 'system', content: 'You know herb-herb and herb-drug interactions.' },
+        { role: 'user', content: `Check for interactions between ${herbA} and ${herbB}.` }
+      ]);
+      document.getElementById('interactionResult').textContent = reply;
+    }
 
-    // Interaction Checker
-   async function checkInteraction() {
-    bumpStat('int');
-    const herbA = document.getElementById('herbA').value;
-    const herbB = document.getElementById('herbB').value;
-    const res = await fetch(`${API_BASE}/api/interaction`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ herbA, herbB })
-    });
-    const { interaction } = await res.json();
-    document.getElementById('interactionResult').textContent = interaction;
-  }
-
-    // Herb search filter
+     // Herb search filter
     document.getElementById('searchHerb').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       document.querySelectorAll('#herbTable tr').forEach(tr =>
