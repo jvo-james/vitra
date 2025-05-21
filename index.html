@@ -331,7 +331,7 @@ section.module button:hover {
       <!-- 1. AI-Powered Diagnostic Tools -->
       <section class="module" aria-labelledby="dx-section">
         <h2 id="dx-section"><i class="fas fa-stethoscope"></i>AI Diagnostic Tool</h2>
-        <form onsubmit="runDiagnostics(); return false;">
+       <form onsubmit="console.log('▶ runDiagnostics fired'); runDiagnostics(); return false;">
           <label class="sr-only" for="dxInput">Describe symptoms</label>
           <textarea id="dxInput" placeholder="Describe symptoms, history, lab results..." required></textarea>
           <button type="submit"><i class="fas fa-notes-medical"></i> Analyze</button>
@@ -504,10 +504,11 @@ section.module button:hover {
   </div>
 
     <script>
-    
+    console.log('✅ SCRIPT LOADED');
 const OPENAI_PROXY_URL = '/.netlify/functions/openai-proxy';
 
 async function callOpenAI(messages) {
+  console.log('📬 callOpenAI', messages);
   const res = await fetch(OPENAI_PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -532,12 +533,16 @@ async function callOpenAI(messages) {
 
     // 1. AI Diagnostics
     async function runDiagnostics() {
+      console.log('▶▶ runDiagnostics start');
       bumpStat('dx');
+      console.log('   symptoms:', document.getElementById('dxInput').value);
+
       const symptoms = document.getElementById('dxInput').value;
       const reply = await callOpenAI([
         { role: 'system', content: 'You are an expert herbal medicine diagnostic assistant. Suggest appropriate herbal regimens given patient symptoms and background.' },
         { role: 'user', content: `Patient info: ${symptoms}` }
       ]);
+      console.log('   reply:', reply);
       document.getElementById('dxResult').textContent = reply;
     }
 
